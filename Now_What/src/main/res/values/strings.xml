@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="categories">Categories</string>
+    <string name="randomizer">Now What?</string>
+    <string-array name="categories">
+        <item>TV Shows</item>
+        <item>Movies</item>
+        <item>Video Games</item>
+        <item>Tabletop Games</item>
+        <item>Crafts</item>
+        <item>Sports</item>
+    </string-array>
+    <string name="new_item">New Item</string>
+    <string name="new_category">New Category</string>
+    <string name="category_header">Category Name</string>
+    <string name="name">Name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+</resources>
