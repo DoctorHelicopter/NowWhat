@@ -6,7 +6,7 @@ plugins {
 android {
     compileSdk = 32
     defaultConfig {
-        applicationId = "com.example.nowwhat.android"
+        applicationId = "com.drh.nowwhat.android"
         minSdk = 23
         targetSdk = 32
         versionCode = 1
