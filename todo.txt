@@ -1,8 +1,7 @@
-TODO
+TODO for V1
 
-- navigate from category list to items list with header
-- local storage
-- make back button work intuitively
-- make categories toggleable
+- sortable lists
+- ability to delete items
+- make categories and choices toggleable
 - make randomizer button choose from all items in all toggled categories
 - design it better, animations and such

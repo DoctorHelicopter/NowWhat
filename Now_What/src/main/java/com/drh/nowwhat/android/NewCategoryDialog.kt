@@ -34,7 +34,7 @@ class NewCategoryDialog : DialogFragment() {
     }
 
     // Use this instance of the interface to deliver action events
-    internal lateinit var listener: NoticeDialogListener
+    private lateinit var listener: NoticeDialogListener
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.

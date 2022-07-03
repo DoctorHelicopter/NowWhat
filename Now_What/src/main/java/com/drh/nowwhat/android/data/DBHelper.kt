@@ -70,9 +70,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
     }
 
     fun getCategories(): List<Category> {
+        val categories: MutableList<Category> = emptyList<Category>().toMutableList()
         this.readableDatabase.use { db ->
-            val categories: MutableList<Category> = emptyList<Category>().toMutableList()
-
             db.rawQuery("SELECT * FROM $CATEGORIES_TABLE", null)
                 .use { cursor ->
                     while (cursor.moveToNext()) {
@@ -84,14 +83,13 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                         categories.add(c)
                     }
                 }
-            return categories
         }
+        return categories
     }
 
     fun getCategoryChoices(categoryId: Int): List<Choice> {
+        val choices: MutableList<Choice> = emptyList<Choice>().toMutableList()
         this.readableDatabase.use { db ->
-            val choices: MutableList<Choice> = emptyList<Choice>().toMutableList()
-
             db.rawQuery("SELECT * FROM $CHOICES_TABLE WHERE $CATEGORY_ID_COL = $categoryId", null)
                 .use { cursor ->
                     while (cursor.moveToNext()) {
@@ -104,8 +102,38 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                         choices.add(c)
                     }
                 }
-            return choices
         }
+        return choices
+    }
+
+    fun getEnabledCategoriesWithChoices(): List<Category> {
+        var mapper: Map<Category, List<Choice>> = mutableMapOf()
+        this.readableDatabase.use { db ->
+            db.rawQuery(
+                """
+                SELECT
+                    ca.$NAME_COL AS $CATEGORY,
+                    ch.$NAME_COL AS $CHOICE,
+                    ch.$CATEGORY_ID_COL,
+                    ch.$ID_COL
+                FROM $CATEGORIES_TABLE ca 
+                INNER JOIN $CHOICES_TABLE ch ON ca.$ID_COL = ch.$CATEGORY_ID_COL
+                WHERE ca.$ENABLED_COL = 1 AND ch.$ENABLED_COL = 1
+                """.trimIndent(),
+    null
+            ).use { cursor ->
+                    while (cursor.moveToNext()) {
+                        val categoryName = cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY))
+                        val categoryId = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL))
+                        val choiceName = cursor.getString(cursor.getColumnIndexOrThrow(CHOICE))
+                        val choiceId = cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL))
+                        val category = Category(categoryId, categoryName, true, emptyList())
+                        val choice = Choice(choiceId, categoryId, choiceName, true)
+                        mapper = mapper.plus(category to listOf(choice))
+                    }
+                }
+        }
+        return mapper.map { (category, choices) -> category.copy(choices = choices) }
     }
 
     companion object{
@@ -118,5 +146,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         const val CATEGORY_ID_COL = "category_id"
         const val NAME_COL = "name"
         const val ENABLED_COL = "enabled"
+
+        const val CATEGORY = "category"
+        const val CHOICE = "choice"
     }
 }

@@ -16,4 +16,6 @@
     <string name="name">Name</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="category">Category</string>
+    <string name="choice">Choice</string>
 </resources>
