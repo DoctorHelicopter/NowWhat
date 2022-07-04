@@ -6,7 +6,9 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.adapter.CategoriesListAdapter
+import com.drh.nowwhat.android.callback.CategoryTouchHelper
 import com.drh.nowwhat.android.data.DBHelper
+import com.drh.nowwhat.android.model.Category
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CategoriesListActivity : AppCompatActivity(),
@@ -35,14 +37,22 @@ class CategoriesListActivity : AppCompatActivity(),
         // for performance, as layout size is fixed
         recyclerView.setHasFixedSize(true)
 
+        // attach touch helper for drag/drop and swipe
+        CategoryTouchHelper.helper.attachToRecyclerView(recyclerView)
         // configure item adapter
-        recyclerView.adapter = CategoriesListAdapter(this, categories) {
-            // set item click listener
-            val intent = Intent(this, CategoryContentActivity::class.java)
-                .putExtra("categoryName", it.name)
-                .putExtra("categoryId", it.id)
-            startActivity(intent)
-        }
+        recyclerView.adapter = CategoriesListAdapter(
+            this,
+            categories,
+            clickListener = { categoryClickListener(it) }
+        )
+    }
+
+    private fun categoryClickListener(category: Category) {
+        // set item click listener
+        val intent = Intent(this, ChoiceActivity::class.java)
+            .putExtra("categoryName", category.name)
+            .putExtra("categoryId", category.id)
+        startActivity(intent)
     }
 
     // The dialog fragment receives a reference to this Activity through the

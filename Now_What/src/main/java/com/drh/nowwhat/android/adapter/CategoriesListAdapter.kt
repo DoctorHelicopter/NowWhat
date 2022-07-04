@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.R
+import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.model.Category
 
 class CategoriesListAdapter(
     private val context: Context, // TODO use for translations or something
-    private val dataset: List<Category>,
-    private val listener: (Category) -> Unit
+    private var dataset: List<Category>,
+    private val clickListener: (Category) -> Unit
 ) : RecyclerView.Adapter<CategoriesListAdapter.ItemViewHolder>(){
 
     // Provide a reference to the views for each data item
@@ -40,11 +41,32 @@ class CategoriesListAdapter(
         val item = dataset[position]
         holder.textView.text = item.name
         // set listener for each item click
-        holder.itemView.setOnClickListener { listener(item) }
+        holder.itemView.setOnClickListener { clickListener(item) }
     }
 
     /**
      * Return the size of your dataset (invoked by the layout manager)
      */
     override fun getItemCount() = dataset.size
+
+    /**
+     * Update the database with new sort value after moving item
+     */
+    fun moveItem(from: Int, to: Int) {
+        val item = dataset[from]
+        val db = DBHelper(context, null)
+
+        db.updateCategorySort(item, to)
+        dataset = db.getCategories().sortedBy { it.sort }
+    }
+
+    /**
+     * Remove an item from the DB
+     */
+    fun deleteItem(position: Int) {
+        val item = dataset[position]
+        val db = DBHelper(context, null)
+
+        db.deleteCategory(item)
+    }
 }

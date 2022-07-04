@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.R
+import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.model.Choice
 
 class ChoiceAdapter(
     private val context: Context, // TODO use for translations or something
-    private val dataset: List<Choice>
+    private var dataset: List<Choice>
 ) : RecyclerView.Adapter<ChoiceAdapter.ItemViewHolder>(){
 
     // Provide a reference to the views for each data item
@@ -44,4 +45,25 @@ class ChoiceAdapter(
      * Return the size of your dataset (invoked by the layout manager)
      */
     override fun getItemCount() = dataset.size
+
+    /**
+     * Update the database with new sort value after moving item
+     */
+    fun moveItem(from: Int, to: Int) {
+        val item = dataset[from]
+        val db = DBHelper(context, null)
+
+        db.updateChoiceSort(item, to)
+        dataset = db.getCategoryChoices(item.categoryId).sortedBy { it.sort }
+    }
+
+    /**
+     * Remove an item from the DB
+     */
+    fun deleteItem(position: Int) {
+        val item = dataset[position]
+        val db = DBHelper(context, null)
+
+        db.deleteChoice(item)
+    }
 }

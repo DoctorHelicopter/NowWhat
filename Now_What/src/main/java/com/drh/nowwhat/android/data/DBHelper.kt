@@ -59,8 +59,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
         // get max sort and increment
         this.readableDatabase.use { db ->
-            db.rawQuery("SELECT MAX($SORT_COL) FROM $CATEGORIES_TABLE", null)
-                .use { cursor ->
+            db.rawQuery("SELECT MAX($SORT_COL) AS $SORT_COL FROM $CATEGORIES_TABLE", null)
+                .use { cursor -> // TODO erroring
                     values.put(SORT_COL, cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)) + 1)
                 }
         }
@@ -126,7 +126,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         // get max sort and increment
         this.readableDatabase.use { db ->
             db.rawQuery(
-                "SELECT MAX($SORT_COL) FROM $CHOICES_TABLE WHERE $CATEGORY_ID_COL = $categoryId",
+                "SELECT MAX($SORT_COL) AS $SORT_COL FROM $CHOICES_TABLE WHERE $CATEGORY_ID_COL = $categoryId",
                 null
             ).use { cursor ->
                 values.put(SORT_COL, cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)) + 1)
@@ -227,7 +227,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
     companion object{
         private const val DATABASE_NAME = "NOW_WHAT"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
 
         const val CATEGORIES_TABLE = "categories"
         const val CHOICES_TABLE = "choices"

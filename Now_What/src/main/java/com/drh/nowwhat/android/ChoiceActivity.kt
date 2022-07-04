@@ -6,11 +6,12 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.adapter.ChoiceAdapter
+import com.drh.nowwhat.android.callback.ChoiceTouchHelper
 import com.drh.nowwhat.android.data.DBHelper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class CategoryContentActivity : AppCompatActivity(),
-    NewItemDialog.NoticeDialogListener {
+class ChoiceActivity : AppCompatActivity(),
+    NewChoiceDialog.NoticeDialogListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -20,9 +21,9 @@ class CategoryContentActivity : AppCompatActivity(),
         displayItems(categoryId)
 
         // configure button listener
-        val newCategoryButton: FloatingActionButton = findViewById(R.id.newItemButton)
-        newCategoryButton.setOnClickListener {
-            val dialog = NewItemDialog(categoryId)
+        val newChoiceButton: FloatingActionButton = findViewById(R.id.newItemButton)
+        newChoiceButton.setOnClickListener {
+            val dialog = NewChoiceDialog(categoryId)
             dialog.show(supportFragmentManager, "NewItemDialog")
         }
     }
@@ -37,6 +38,10 @@ class CategoryContentActivity : AppCompatActivity(),
         // link dataset to recycler
         val categoryHeader = findViewById<TextView>(R.id.categoryHeader)
         categoryHeader.text = intent.extras?.getString("categoryName")
+
+        // attach touch helper for drag/drop and swipe
+        ChoiceTouchHelper.helper.attachToRecyclerView(recyclerView)
+        // attach item adapter
         recyclerView.adapter = ChoiceAdapter(this, choices)
     }
 

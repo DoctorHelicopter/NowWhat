@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.drh.nowwhat.android.data.DBHelper
 
-class NewItemDialog(private val categoryId: Int) : DialogFragment() {
+class NewChoiceDialog(private val categoryId: Int) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = this.context ?: throw IllegalStateException("Context cannot be null")
         return activity?.let {
