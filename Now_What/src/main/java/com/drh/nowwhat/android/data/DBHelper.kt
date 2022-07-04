@@ -107,7 +107,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
     }
 
     fun getEnabledCategoriesWithChoices(): List<Category> {
-        var mapper: Map<Category, List<Choice>> = mutableMapOf()
+        val pairs: MutableList<Pair<Category, Choice>> = emptyList<Pair<Category, Choice>>().toMutableList()
         this.readableDatabase.use { db ->
             db.rawQuery(
                 """
@@ -120,7 +120,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                 INNER JOIN $CHOICES_TABLE ch ON ca.$ID_COL = ch.$CATEGORY_ID_COL
                 WHERE ca.$ENABLED_COL = 1 AND ch.$ENABLED_COL = 1
                 """.trimIndent(),
-    null
+            null
             ).use { cursor ->
                     while (cursor.moveToNext()) {
                         val categoryName = cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY))
@@ -129,10 +129,13 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                         val choiceId = cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL))
                         val category = Category(categoryId, categoryName, true, emptyList())
                         val choice = Choice(choiceId, categoryId, choiceName, true)
-                        mapper = mapper.plus(category to listOf(choice))
+                        pairs += Pair(category, choice)
                     }
                 }
         }
+        val mapper = pairs
+            .groupBy { it.first }
+            .map { (category, items) -> category to items.map { it.second } }
         return mapper.map { (category, choices) -> category.copy(choices = choices) }
     }
 

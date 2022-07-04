@@ -31,14 +31,14 @@ class MainActivity : AppCompatActivity() {
             val categoryView: TextView = findViewById(R.id.selectedCategory)
             val choiceView: TextView = findViewById(R.id.selectedChoice)
             if (categories.isEmpty()) {
-                categoryView.text = "No categories found!" // TODO resource
+                categoryView.text = getString(R.string.no_categories_error)
                 categoryView.visibility = VISIBLE
             } else {
-                val selectedCategory = categories[Random.nextInt(categories.size)]
+                val r = Random
+                val selectedCategory = categories[r.nextInt(categories.size)]
                 val choices = selectedCategory.choices
-                val selectedChoice = choices[Random.nextInt(choices.size)]
+                val selectedChoice = choices[r.nextInt(choices.size)]
 
-                // TODO this isn't as random as it seems, only fetches one choice per category
                 categoryView.text = selectedCategory.name
                 choiceView.text = selectedChoice.name
                 categoryView.visibility = VISIBLE
