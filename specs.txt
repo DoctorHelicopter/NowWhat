@@ -24,6 +24,7 @@ Roadmap
 - Login and account-based saves
 - Add friends, share lists
 - Recommendations based on friend's lists and favorites (?)
+- Smart home integration??
 
 
 Categories
