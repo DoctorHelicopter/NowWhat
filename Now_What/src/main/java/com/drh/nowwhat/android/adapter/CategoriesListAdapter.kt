@@ -1,9 +1,7 @@
 package com.drh.nowwhat.android.adapter
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.R
@@ -11,8 +9,8 @@ import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.model.Category
 
 class CategoriesListAdapter(
-    private val context: Context, // TODO use for translations or something
-    private var dataset: List<Category>,
+    val context: Context, // TODO use for translations or something
+    var dataset: List<Category>,
     private val clickListener: (Category) -> Unit
 ) : RecyclerView.Adapter<CategoriesListAdapter.ItemViewHolder>(){
 
@@ -21,7 +19,7 @@ class CategoriesListAdapter(
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just an Affirmation object.
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.category_title)
+        val title: TextView = view.findViewById(R.id.itemTitle)
     }
 
     /**
@@ -39,7 +37,7 @@ class CategoriesListAdapter(
      */
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = dataset[position]
-        holder.textView.text = item.name
+        holder.title.text = item.name
         // set listener for each item click
         holder.itemView.setOnClickListener { clickListener(item) }
     }
@@ -68,5 +66,6 @@ class CategoriesListAdapter(
         val db = DBHelper(context, null)
 
         db.deleteCategory(item)
+        dataset = db.getCategories().sortedBy { it.sort }
     }
 }

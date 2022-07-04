@@ -60,7 +60,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         // get max sort and increment
         this.readableDatabase.use { db ->
             db.rawQuery("SELECT MAX($SORT_COL) AS $SORT_COL FROM $CATEGORIES_TABLE", null)
-                .use { cursor -> // TODO erroring
+                .use { cursor ->
+                    cursor.moveToFirst()
                     values.put(SORT_COL, cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)) + 1)
                 }
         }
@@ -87,7 +88,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         reconcileCategorySort()
     }
 
-    fun reconcileCategorySort() {
+    private fun reconcileCategorySort() {
         // shove all sorts down to remove gaps
         val categories = getCategories()
         this.writableDatabase.use { db ->
@@ -129,6 +130,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                 "SELECT MAX($SORT_COL) AS $SORT_COL FROM $CHOICES_TABLE WHERE $CATEGORY_ID_COL = $categoryId",
                 null
             ).use { cursor ->
+                cursor.moveToFirst()
                 values.put(SORT_COL, cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)) + 1)
             }
         }
@@ -154,7 +156,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         reconcileChoiceSort(choice.categoryId)
     }
 
-    fun reconcileChoiceSort(categoryId: Int) {
+    private fun reconcileChoiceSort(categoryId: Int) {
         // shove all sorts down to remove gaps
         val choices = getCategoryChoices(categoryId)
         this.writableDatabase.use { db ->

@@ -19,4 +19,6 @@
     <string name="category">Category</string>
     <string name="choice">Choice</string>
     <string name="no_categories_error">No categories found!</string>
+    <string name="delete_item">Delete %s?</string>
+    <string name="delete">Delete</string>
 </resources>

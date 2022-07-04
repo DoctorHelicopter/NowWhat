@@ -11,7 +11,7 @@ import com.drh.nowwhat.android.data.DBHelper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ChoiceActivity : AppCompatActivity(),
-    NewChoiceDialog.NoticeDialogListener {
+    NewChoiceDialog.NewChoiceDialogListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,7 +47,7 @@ class ChoiceActivity : AppCompatActivity(),
 
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    // defined by the DialogListener interface
     override fun onDialogPositiveClick(dialog: DialogFragment, categoryId: Int) {
         // User touched the dialog's positive button
         displayItems(categoryId)

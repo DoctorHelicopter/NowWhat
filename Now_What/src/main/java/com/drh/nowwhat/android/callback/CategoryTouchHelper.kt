@@ -1,11 +1,15 @@
 package com.drh.nowwhat.android.callback
 
-import androidx.recyclerview.widget.ItemTouchHelper.*
+import android.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
+import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.adapter.CategoriesListAdapter
+import com.drh.nowwhat.android.model.Category
 
-object CategoryTouchHelper {
+
+class CategoryTouchHelper(val clickListener: (Category) -> Unit) {
     val helper by lazy {
         val simpleItemTouchCallback =
             object : ItemTouchHelper.SimpleCallback(UP or DOWN or START or END, 0) {
@@ -34,10 +38,25 @@ object CategoryTouchHelper {
                     return true
                 }
 
+                // TODO this isn't working but it might be an emulator issue
+                //   Also it seems like it overlaps with the long touch action
+                //   look into it
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     //on swipe tells you when an item is swiped left or right from its position ( swipe to delete)
-                    // TODO confirmation dialog
-                    // TODO update database with adapter callback
+                    if (direction == LEFT) {
+                        val recyclerView = viewHolder.itemView.parent as RecyclerView
+                        val adapter = recyclerView.adapter as CategoriesListAdapter
+                        val position = viewHolder.adapterPosition
+                        val context = adapter.context
+                        val category = adapter.dataset[position]
+                        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+                        builder.setMessage(context.getString(R.string.delete_item, category.name))
+                        builder.setPositiveButton(context.getString(R.string.delete)) { _, _ ->
+                            adapter.deleteItem(position)
+                        }.setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
+                            dialog.cancel()
+                        }.show() //show alert dialog
+                    }
                 }
 
                 override fun onSelectedChanged(

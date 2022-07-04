@@ -12,7 +12,7 @@ import com.drh.nowwhat.android.model.Category
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CategoriesListActivity : AppCompatActivity(),
-    NewCategoryDialog.NoticeDialogListener {
+    NewCategoryDialog.NewCategoryDialogListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,7 +38,7 @@ class CategoriesListActivity : AppCompatActivity(),
         recyclerView.setHasFixedSize(true)
 
         // attach touch helper for drag/drop and swipe
-        CategoryTouchHelper.helper.attachToRecyclerView(recyclerView)
+        CategoryTouchHelper { categoryClickListener(it) }.helper.attachToRecyclerView(recyclerView)
         // configure item adapter
         recyclerView.adapter = CategoriesListAdapter(
             this,
@@ -57,7 +57,7 @@ class CategoriesListActivity : AppCompatActivity(),
 
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    // defined by the DialogListener interface
     override fun onDialogPositiveClick(dialog: DialogFragment) {
         // User touched the dialog's positive button
         displayCategories()
