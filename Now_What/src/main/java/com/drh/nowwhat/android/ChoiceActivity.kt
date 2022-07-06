@@ -16,7 +16,7 @@ class ChoiceActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         // set view to category content
-        setContentView(R.layout.category_content)
+        setContentView(R.layout.item_list)
         val categoryId = intent.extras?.getInt("categoryId")!! // TODO better null safety
         displayItems(categoryId)
 
@@ -32,11 +32,11 @@ class ChoiceActivity : AppCompatActivity(),
         val db = DBHelper(this, null)
         val choices = db.getCategoryChoices(categoryId)
         // create view
-        val recyclerView = findViewById<RecyclerView>(R.id.category_content)
+        val recyclerView = findViewById<RecyclerView>(R.id.item_recycler)
         // for performance, as layout size is fixed
         recyclerView.setHasFixedSize(true)
         // link dataset to recycler
-        val categoryHeader = findViewById<TextView>(R.id.categoryHeader)
+        val categoryHeader = findViewById<TextView>(R.id.item_header)
         categoryHeader.text = intent.extras?.getString("categoryName")
 
         // attach touch helper for drag/drop and swipe

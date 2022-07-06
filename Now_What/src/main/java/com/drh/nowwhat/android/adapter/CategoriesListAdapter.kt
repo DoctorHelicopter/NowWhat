@@ -19,7 +19,7 @@ class CategoriesListAdapter(
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just an Affirmation object.
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.findViewById(R.id.itemTitle)
+        val textView: TextView = view.findViewById(R.id.itemText)
     }
 
     /**
@@ -28,7 +28,7 @@ class CategoriesListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         // create a new view
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.category_item, parent, false)
+            .inflate(R.layout.card_toggle_item, parent, false)
         return ItemViewHolder(adapterLayout)
     }
 
@@ -37,7 +37,7 @@ class CategoriesListAdapter(
      */
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = dataset[position]
-        holder.title.text = item.name
+        holder.textView.text = item.name
         // set listener for each item click
         holder.itemView.setOnClickListener { clickListener(item) }
     }

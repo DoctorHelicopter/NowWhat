@@ -1,7 +1,6 @@
 TODO for V1
 
-- sortable lists
-- ability to delete items
+- ability to delete items (add an edit button at the top, also allow rename)
 - make categories and choices toggleable
 - make randomizer button choose from all items in all toggled categories
 - design it better, animations and such

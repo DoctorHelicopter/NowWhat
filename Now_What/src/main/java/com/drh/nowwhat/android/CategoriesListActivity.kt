@@ -3,6 +3,7 @@ package com.drh.nowwhat.android
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.adapter.CategoriesListAdapter
@@ -17,11 +18,11 @@ class CategoriesListActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         // set view to categories list
-        setContentView(R.layout.categories_list)
+        setContentView(R.layout.item_list)
         displayCategories()
 
         // configure new item button listener
-        val newCategoryButton: FloatingActionButton = findViewById(R.id.newCategoryButton)
+        val newCategoryButton: FloatingActionButton = findViewById(R.id.newItemButton)
         newCategoryButton.setOnClickListener {
             val dialog = NewCategoryDialog()
             dialog.show(supportFragmentManager, "NewCategoryDialog")
@@ -33,10 +34,12 @@ class CategoriesListActivity : AppCompatActivity(),
         // initialize data
         val categories = db.getCategories()
         // create view
-        val recyclerView = findViewById<RecyclerView>(R.id.categories_list)
+        val recyclerView = findViewById<RecyclerView>(R.id.item_recycler)
         // for performance, as layout size is fixed
         recyclerView.setHasFixedSize(true)
 
+        val categoryHeader = findViewById<TextView>(R.id.item_header)
+        categoryHeader.text = getString(R.string.categories)
         // attach touch helper for drag/drop and swipe
         CategoryTouchHelper { categoryClickListener(it) }.helper.attachToRecyclerView(recyclerView)
         // configure item adapter
