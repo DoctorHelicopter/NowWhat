@@ -3,6 +3,7 @@ package com.drh.nowwhat.android
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.TextView
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
             if (categories.isEmpty()) {
                 categoryView.text = getString(R.string.no_categories_error)
                 categoryView.visibility = VISIBLE
+                choiceView.visibility = INVISIBLE
             } else {
                 val r = Random
                 val selectedCategory = categories[r.nextInt(categories.size)]

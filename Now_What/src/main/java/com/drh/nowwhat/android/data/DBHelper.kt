@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.model.Category
 import com.drh.nowwhat.android.model.Choice
+import java.lang.IllegalArgumentException
 
 class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
@@ -79,6 +80,15 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         reconcileCategorySort()
     }
 
+    fun updateCategory(category: Category) {
+        val values = ContentValues()
+        values.put(NAME_COL, category.name)
+        values.put(ENABLED_COL, category.enabled)
+        this.writableDatabase.use { db ->
+            db.update(CATEGORIES_TABLE, values, "$ID_COL = ${category.id}", null)
+        }
+    }
+
     fun updateCategorySort(category: Category, newSort: Int) {
         // anything with sort gte new sort gets incremented
         this.writableDatabase.use { db ->
@@ -98,6 +108,24 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                     db.execSQL("UPDATE $CATEGORIES_TABLE SET $SORT_COL = $i WHERE $ID_COL = ${c.id}")
                 }
         }
+    }
+
+    fun getCategory(id: Int): Category {
+        var category: Category? = null
+        this.readableDatabase.use { db ->
+            db.rawQuery("SELECT * FROM $CATEGORIES_TABLE WHERE $ID_COL = $id", null)
+                .use { cursor ->
+                    while (cursor.moveToNext()) {
+                        category = Category(
+                            cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
+                            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL))
+                        )
+                    }
+                }
+        }
+        return category ?: throw IllegalArgumentException("Invalid category ID")
     }
 
     fun getCategories(): List<Category> {
@@ -145,6 +173,15 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             db.delete(CHOICES_TABLE, "$ID_COL = ${choice.id}", null)
         }
         reconcileChoiceSort(choice.categoryId)
+    }
+
+    fun updateChoice(choice: Choice) {
+        val values = ContentValues()
+        values.put(NAME_COL, choice.name)
+        values.put(ENABLED_COL, choice.enabled)
+        this.writableDatabase.use { db ->
+            db.update(CHOICES_TABLE, values, "$ID_COL = ${choice.id}", null)
+        }
     }
 
     fun updateChoiceSort(choice: Choice, newSort: Int) {

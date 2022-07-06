@@ -10,10 +10,12 @@ import com.drh.nowwhat.android.adapter.CategoriesListAdapter
 import com.drh.nowwhat.android.callback.CategoryTouchHelper
 import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.model.Category
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CategoriesListActivity : AppCompatActivity(),
     NewCategoryDialog.NewCategoryDialogListener {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,16 +40,24 @@ class CategoriesListActivity : AppCompatActivity(),
         // for performance, as layout size is fixed
         recyclerView.setHasFixedSize(true)
 
-        val categoryHeader = findViewById<TextView>(R.id.item_header)
+        val categoryHeader = findViewById<TextView>(R.id.item_header_text)
         categoryHeader.text = getString(R.string.categories)
         // attach touch helper for drag/drop and swipe
-        CategoryTouchHelper { categoryClickListener(it) }.helper.attachToRecyclerView(recyclerView)
+        CategoryTouchHelper.helper.attachToRecyclerView(recyclerView)
         // configure item adapter
-        recyclerView.adapter = CategoriesListAdapter(
+        val adapter = CategoriesListAdapter(
             this,
             categories,
             clickListener = { categoryClickListener(it) }
         )
+        recyclerView.adapter = adapter
+
+        // configure edit button listener
+        val editItemsButton: MaterialButton = findViewById(R.id.toggle_edit_items_button)
+        editItemsButton.setOnClickListener {
+            // need to toggle edit buttons on each list item
+            adapter.toggleEditButtons(recyclerView)
+        }
     }
 
     private fun categoryClickListener(category: Category) {

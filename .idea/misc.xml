@@ -4,10 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/activity_main.xml" value="0.2640625" />
+        <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/card_toggle_item.xml" value="0.31504986400725293" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/categories_list.xml" value="0.2630208333333333" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/category_content.xml" value="0.264" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/category_item.xml" value="0.2125" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/confirmation.xml" value="0.17528858486532706" />
+        <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/item_list.xml" value="0.31504986400725293" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/new_category.xml" value="0.1834117144078666" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/new_item.xml" value="0.21675929884566053" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/randomizer.xml" value="0.2640625" />

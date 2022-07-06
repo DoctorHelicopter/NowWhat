@@ -1,6 +1,6 @@
 TODO for V1
 
-- ability to delete items (add an edit button at the top, also allow rename)
-- make categories and choices toggleable
-- make randomizer button choose from all items in all toggled categories
+- editing multiple items creates a chain of intent redirects, causing need for multiple back button hits to get home
+- edit/delete buttons disappear after editing an item...should i just make them always visible?
+- clean up mix of camel and snake case in item ids
 - design it better, animations and such

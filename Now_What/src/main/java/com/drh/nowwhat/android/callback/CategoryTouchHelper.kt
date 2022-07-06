@@ -6,10 +6,9 @@ import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.adapter.CategoriesListAdapter
-import com.drh.nowwhat.android.model.Category
 
 
-class CategoryTouchHelper(val clickListener: (Category) -> Unit) {
+object CategoryTouchHelper {
     val helper by lazy {
         val simpleItemTouchCallback =
             object : ItemTouchHelper.SimpleCallback(UP or DOWN or START or END, 0) {
