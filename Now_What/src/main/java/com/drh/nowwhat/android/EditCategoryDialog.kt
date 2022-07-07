@@ -2,7 +2,6 @@ package com.drh.nowwhat.android
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
@@ -19,8 +18,8 @@ class EditCategoryDialog(private val category: Category) : DialogFragment() {
             val builder = AlertDialog.Builder(it)
             // Get the layout inflater
             val inflater = requireActivity().layoutInflater
-            val inputView = inflater.inflate(R.layout.new_item, null)
-            val nameView = inputView.findViewById<TextView>(R.id.newItemName)
+            val inputView = inflater.inflate(R.layout.text_dialog, null)
+            val nameView = inputView.findViewById<TextView>(R.id.text_input_field)
             nameView.text = category.name
             builder.setView(inputView)
                 .setPositiveButton(R.string.save) { _, _ ->

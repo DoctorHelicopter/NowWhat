@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/categoriesButton"
+        android:id="@+id/categories_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/randomizerButton"
+        android:id="@+id/randomizer_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -26,10 +26,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categoriesButton" />
+        app:layout_constraintTop_toBottomOf="@+id/categories_button" />
 
     <TextView
-        android:id="@+id/selectedCategory"
+        android:id="@+id/selected_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
@@ -37,10 +37,10 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/randomizerButton" />
+        app:layout_constraintTop_toBottomOf="@+id/randomizer_button" />
 
     <TextView
-        android:id="@+id/selectedChoice"
+        android:id="@+id/selected_choice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -48,6 +48,6 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectedCategory" />
+        app:layout_constraintTop_toBottomOf="@+id/selected_category" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,11 +17,11 @@ class NewCategoryDialog : DialogFragment() {
             val builder = AlertDialog.Builder(it)
             // Get the layout inflater
             val inflater = requireActivity().layoutInflater
-            val inputView = inflater.inflate(R.layout.new_item, null)
+            val inputView = inflater.inflate(R.layout.text_dialog, null)
             builder.setView(inputView)
                 .setPositiveButton(R.string.save) { _, _ ->
                     // save new category
-                    val nameView = inputView.findViewById<TextView>(R.id.newItemName)
+                    val nameView = inputView.findViewById<TextView>(R.id.text_input_field)
                     db.addCategory(nameView.text.toString())
                     listener.onDialogPositiveClick(this)
                 }

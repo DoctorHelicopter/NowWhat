@@ -22,7 +22,7 @@ class ChoiceActivity : AppCompatActivity(),
         displayItems(categoryId)
 
         // configure button listener
-        val newChoiceButton: FloatingActionButton = findViewById(R.id.newItemButton)
+        val newChoiceButton: FloatingActionButton = findViewById(R.id.new_item_button)
         newChoiceButton.setOnClickListener {
             val dialog = NewChoiceDialog(categoryId)
             dialog.show(supportFragmentManager, "NewItemDialog")

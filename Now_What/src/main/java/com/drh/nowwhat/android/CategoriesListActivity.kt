@@ -24,7 +24,7 @@ class CategoriesListActivity : AppCompatActivity(),
         displayCategories()
 
         // configure new item button listener
-        val newCategoryButton: FloatingActionButton = findViewById(R.id.newItemButton)
+        val newCategoryButton: FloatingActionButton = findViewById(R.id.new_item_button)
         newCategoryButton.setOnClickListener {
             val dialog = NewCategoryDialog()
             dialog.show(supportFragmentManager, "NewCategoryDialog")

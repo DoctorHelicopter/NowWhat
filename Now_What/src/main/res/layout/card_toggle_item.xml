@@ -25,7 +25,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/itemText"
+                android:id="@+id/item_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -67,11 +67,11 @@
                 android:visibility="invisible"
                 app:icon="@drawable/baseline_delete_grey_500_24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/itemToggle"
+                app:layout_constraintEnd_toStartOf="@+id/item_toggle"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/itemToggle"
+                android:id="@+id/item_toggle"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginEnd="8dp"

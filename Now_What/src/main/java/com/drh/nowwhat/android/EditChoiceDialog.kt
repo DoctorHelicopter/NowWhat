@@ -2,13 +2,11 @@ package com.drh.nowwhat.android
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.drh.nowwhat.android.data.DBHelper
-import com.drh.nowwhat.android.model.Category
 import com.drh.nowwhat.android.model.Choice
 
 class EditChoiceDialog(private val choice: Choice) : DialogFragment() {
@@ -20,8 +18,8 @@ class EditChoiceDialog(private val choice: Choice) : DialogFragment() {
             val builder = AlertDialog.Builder(it)
             // Get the layout inflater
             val inflater = requireActivity().layoutInflater
-            val inputView = inflater.inflate(R.layout.new_item, null)
-            val nameView = inputView.findViewById<TextView>(R.id.newItemName)
+            val inputView = inflater.inflate(R.layout.text_dialog, null)
+            val nameView = inputView.findViewById<TextView>(R.id.text_input_field)
             nameView.text = choice.name
             builder.setView(inputView)
                 .setPositiveButton(R.string.save) { _, _ ->

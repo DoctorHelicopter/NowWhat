@@ -19,18 +19,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // configure button listener
-        val categoriesButton: Button = findViewById(R.id.categoriesButton)
+        val categoriesButton: Button = findViewById(R.id.categories_button)
         categoriesButton.setOnClickListener {
             val intent = Intent(this, CategoriesListActivity::class.java)
             startActivity(intent)
         }
 
         // configure randomizer
-        val randomizerButton: Button = findViewById(R.id.randomizerButton)
+        val randomizerButton: Button = findViewById(R.id.randomizer_button)
         randomizerButton.setOnClickListener {
             val categories = db.getEnabledCategoriesWithChoices()
-            val categoryView: TextView = findViewById(R.id.selectedCategory)
-            val choiceView: TextView = findViewById(R.id.selectedChoice)
+            val categoryView: TextView = findViewById(R.id.selected_category)
+            val choiceView: TextView = findViewById(R.id.selected_choice)
             if (categories.isEmpty()) {
                 categoryView.text = getString(R.string.no_categories_error)
                 categoryView.visibility = VISIBLE
