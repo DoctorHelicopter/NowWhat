@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.adapter.ChoiceAdapter
 import com.drh.nowwhat.android.callback.ChoiceTouchHelper
 import com.drh.nowwhat.android.data.DBHelper
+import com.drh.nowwhat.android.dialog.NewChoiceDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -32,7 +33,6 @@ class ChoiceActivity : AppCompatActivity(),
     private fun displayItems(categoryId: Int) {
         val db = DBHelper(this, null)
         val choices = db.getCategoryChoices(categoryId)
-        val category = db.getCategory(categoryId)
         // create view
         val recyclerView = findViewById<RecyclerView>(R.id.item_recycler)
         // for performance, as layout size is fixed
@@ -44,15 +44,24 @@ class ChoiceActivity : AppCompatActivity(),
         // attach touch helper for drag/drop and swipe
         ChoiceTouchHelper.helper.attachToRecyclerView(recyclerView)
         // attach item adapter
-        val adapter = ChoiceAdapter(this, choices)
+        val editButtonsVisible = intent.extras?.getBoolean("editButtonsVisible") ?: false
+        val adapter = ChoiceAdapter(this, choices, editButtonsVisible, ::refreshList)
         recyclerView.adapter = adapter
 
         // configure edit button listener
         val editItemsButton: MaterialButton = findViewById(R.id.toggle_edit_items_button)
         editItemsButton.setOnClickListener {
             // need to toggle edit buttons on each list item
-            adapter.toggleEditButtons(recyclerView, category)
+            adapter.toggleEditButtons(recyclerView)
         }
+    }
+
+    private fun refreshList() {
+        finish()
+        overridePendingTransition(0, 0);
+        intent.putExtra("editButtonsVisible", true)
+        startActivity(intent)
+        overridePendingTransition(0, 0);
     }
 
     // The dialog fragment receives a reference to this Activity through the

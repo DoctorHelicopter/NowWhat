@@ -15,7 +15,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
     // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
         val categoriesQuery = """
-            CREATE TABLE $CATEGORIES_TABLE (
+            CREATE TABLE IF NOT EXISTS $CATEGORIES_TABLE  (
               $ID_COL INTEGER PRIMARY KEY,
               $NAME_COL TEXT NOT NULL,
               $ENABLED_COL INTEGER DEFAULT 1,
@@ -23,7 +23,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             )
         """.trimIndent()
         val choicesQuery = """
-            CREATE TABLE $CHOICES_TABLE (
+            CREATE TABLE IF NOT EXISTS $CHOICES_TABLE (
               $ID_COL INTEGER PRIMARY KEY,
               $CATEGORY_ID_COL INTEGER NOT NULL,
               $NAME_COL TEXT NOT NULL,
@@ -34,13 +34,16 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
         db.execSQL(categoriesQuery)
         db.execSQL(choicesQuery)
-        initDb(db)
+
+        // only init data if there's none present
+        db.rawQuery("SELECT COUNT(*) FROM $CATEGORIES_TABLE", null).use { cursor ->
+            if (cursor.count == 0)
+                initDb(db)
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
-        // this method is to check if table already exists
-        db.execSQL("DROP TABLE IF EXISTS $CATEGORIES_TABLE")
-        db.execSQL("DROP TABLE IF EXISTS $CHOICES_TABLE")
+        // put DB migrations here when they exist
         onCreate(db)
     }
 

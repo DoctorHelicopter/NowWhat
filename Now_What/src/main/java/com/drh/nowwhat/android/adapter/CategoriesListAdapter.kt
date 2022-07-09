@@ -8,10 +8,8 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.drh.nowwhat.android.CategoriesListActivity
-import com.drh.nowwhat.android.EditCategoryDialog
 import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.model.Category
@@ -21,10 +19,10 @@ import com.google.android.material.button.MaterialButton
 class CategoriesListAdapter(
     val context: Context,
     var dataset: List<Category>,
-    private val clickListener: (Category) -> Unit
+    private val clickListener: (Category) -> Unit,
+    private var editButtonsVisible: Boolean,
+    private val refreshCallback: () -> Unit
 ) : RecyclerView.Adapter<CategoriesListAdapter.ItemViewHolder>() {
-
-    private var editButtonsVisible: Boolean = false
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -33,6 +31,8 @@ class CategoriesListAdapter(
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.item_text)
         val itemToggle: SwitchCompat = view.findViewById(R.id.item_toggle)
+        val editItemButton: MaterialButton = view.findViewById(R.id.edit_item_button)
+        val deleteItemButton: MaterialButton = view.findViewById(R.id.delete_item_button)
     }
 
     /**
@@ -57,43 +57,73 @@ class CategoriesListAdapter(
         holder.itemToggle.setOnCheckedChangeListener { _, isChecked ->
             toggleItem(item, isChecked)
         }
+        if (!editButtonsVisible) {
+            holder.editItemButton.visibility = INVISIBLE
+            holder.deleteItemButton.visibility = INVISIBLE
+            holder.editItemButton.setOnClickListener {}
+            holder.deleteItemButton.setOnClickListener {}
+        } else {
+            holder.editItemButton.visibility = VISIBLE
+            holder.deleteItemButton.visibility = VISIBLE
+            setClickListeners(holder, item, position)
+        }
     }
 
     fun toggleEditButtons(recyclerView: RecyclerView) {
         (0 until recyclerView.childCount).forEach {
             val view = recyclerView.getChildAt(it)
+            val holder = ItemViewHolder(view)
             val position = recyclerView.getChildAdapterPosition(view)
             val category = dataset[position]
-            val editItemButton: MaterialButton = view.findViewById(R.id.edit_item_button)
-            val deleteItemButton: MaterialButton = view.findViewById(R.id.delete_item_button)
             if (editButtonsVisible) {
-                editItemButton.visibility = INVISIBLE
-                editItemButton.setOnClickListener {}
-                deleteItemButton.visibility = INVISIBLE
-                deleteItemButton.setOnClickListener {}
+                holder.editItemButton.visibility = INVISIBLE
+                holder.deleteItemButton.visibility = INVISIBLE
+                holder.editItemButton.setOnClickListener {}
+                holder.deleteItemButton.setOnClickListener {}
             } else {
-                editItemButton.visibility = VISIBLE
-                editItemButton.setOnClickListener {
-                    val dialog = EditCategoryDialog(category)
-                    context as FragmentActivity
-                    dialog.show(context.supportFragmentManager, "EditCategoryDialog")
-                }
-                deleteItemButton.visibility = VISIBLE
-                deleteItemButton.setOnClickListener {
-                    val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-                    builder.setMessage(context.getString(R.string.delete_item, category.name))
-                    builder.setPositiveButton(context.getString(R.string.delete)) { _, _ ->
-                        deleteItem(position)
-                        // re-render category list
-                        val intent = Intent(context, CategoriesListActivity::class.java)
-                        context.startActivity(intent)
-                    }.setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
-                        dialog.cancel()
-                    }.show() //show alert dialog
-                }
+                holder.editItemButton.visibility = VISIBLE
+                holder.deleteItemButton.visibility = VISIBLE
+                setClickListeners(holder, category, position)
             }
         }
         editButtonsVisible = !editButtonsVisible
+    }
+
+    /**
+     * Enable click listeners for edit and delete buttons
+     */
+    private fun setClickListeners(holder: ItemViewHolder, category: Category, position: Int) {
+        holder.editItemButton.setOnClickListener {
+            val db = DBHelper(context, null)
+            // Use the Builder class for convenient dialog construction
+            val builder = AlertDialog.Builder(context)
+            // Get the layout inflater
+            val inputView = LayoutInflater.from(context).inflate(R.layout.text_dialog, null)
+            val nameView = inputView.findViewById<TextView>(R.id.text_input_field)
+            nameView.text = category.name
+            builder.setView(inputView)
+                .setPositiveButton(R.string.save) { _, _ ->
+                    // save updated category
+                    db.updateCategory(category.copy(name = nameView.text.toString()))
+                    // re-render category list
+                    refreshCallback()
+                }
+                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.cancel()
+                }.show()
+        }
+        holder.deleteItemButton.setOnClickListener {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+            builder.setMessage(context.getString(R.string.delete_item, category.name))
+            builder.setPositiveButton(context.getString(R.string.delete)) { _, _ ->
+                deleteItem(position)
+                // re-render category list
+                refreshCallback()
+            }.setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
+                dialog.cancel()
+            }.show() //show alert dialog
+        }
+
     }
 
     /**

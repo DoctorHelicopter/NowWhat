@@ -36,11 +36,8 @@ class MainActivity : AppCompatActivity() {
                 categoryView.visibility = VISIBLE
                 choiceView.visibility = INVISIBLE
             } else {
-                val r = Random
-                val selectedCategory = categories[r.nextInt(categories.size)]
-                val choices = selectedCategory.choices
-                val selectedChoice = choices[r.nextInt(choices.size)]
-
+                val allOptions = categories.map { c -> c.choices.map { Pair(c, it) } }.flatten()
+                val (selectedCategory, selectedChoice) = allOptions[Random.nextInt(allOptions.size)]
                 categoryView.text = selectedCategory.name
                 choiceView.text = selectedChoice.name
                 categoryView.visibility = VISIBLE

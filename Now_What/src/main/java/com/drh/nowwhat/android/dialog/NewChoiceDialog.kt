@@ -1,4 +1,4 @@
-package com.drh.nowwhat.android
+package com.drh.nowwhat.android.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.data.DBHelper
 
 class NewChoiceDialog(private val categoryId: Int) : DialogFragment() {
