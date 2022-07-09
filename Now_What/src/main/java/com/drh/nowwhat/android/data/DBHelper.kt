@@ -37,7 +37,9 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
         // only init data if there's none present
         db.rawQuery("SELECT COUNT(*) FROM $CATEGORIES_TABLE", null).use { cursor ->
-            if (cursor.count == 0)
+            cursor.moveToFirst()
+            val rowCount = cursor.getInt(0)
+            if (rowCount == 0)
                 initDb(db)
         }
     }
