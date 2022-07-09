@@ -1,3 +1,4 @@
 TODO for V1
 
-- design it better, animations and such
+- add a fun randomizer animation
+- more docstrings

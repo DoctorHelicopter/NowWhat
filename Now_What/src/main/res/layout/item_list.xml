@@ -6,41 +6,50 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/item_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/item_header_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_weight="0.7"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="1dp"
             android:text="@string/category_header"
             android:textAlignment="textStart"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="34sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/toggle_edit_items_button"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/toggle_edit_items_button"
-            android:layout_width="0dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_weight="0.35"
             android:background="@android:color/transparent"
             android:contentDescription="@string/edit"
-            android:gravity="center"
-            android:theme="@style/Theme.MaterialComponents"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:theme="@style/AppTheme"
             app:icon="@drawable/baseline_build_grey_500_24dp"
-            tools:ignore="TouchTargetSizeCheck" />
-    </LinearLayout>
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@color/greyIcon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/item_header_text"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_recycler"
@@ -67,5 +76,6 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/item_recycler"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:srcCompat="@android:drawable/ic_menu_add"
+        app:backgroundTint="@color/colorAccent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
