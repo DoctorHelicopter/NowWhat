@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Now What?</string>
+    <string name="cancel">Cancel</string>
     <string name="categories">Categories</string>
+    <string name="category">Category</string>
+    <string name="category_header">Category Name</string>
+    <string name="choice">Choice</string>
+    <string name="delete">Delete</string>
+    <string name="delete_item">Delete %s?</string>
+    <string name="edit">Edit</string>
+    <string name="name">Name</string>
+    <string name="new_category">New Category</string>
+    <string name="new_item">New Item</string>
+    <string name="no_categories_error">No categories found!</string>
     <string name="randomizer">Now What?</string>
-    <string-array name="categories">
+    <string name="save">Save</string>
+    <string-array name="default_categories">
         <item>TV Shows</item>
         <item>Movies</item>
         <item>Video Games</item>
@@ -11,16 +23,16 @@
         <item>Crafts</item>
         <item>Sports</item>
     </string-array>
-    <string name="new_item">New Item</string>
-    <string name="new_category">New Category</string>
-    <string name="category_header">Category Name</string>
-    <string name="name">Name</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="category">Category</string>
-    <string name="choice">Choice</string>
-    <string name="no_categories_error">No categories found!</string>
-    <string name="delete_item">Delete %s?</string>
-    <string name="delete">Delete</string>
-    <string name="edit">Edit</string>
+    <string-array name="progress_text">
+        <item>Calculating…</item>
+        <item>Reading tea leaves…</item>
+        <item>Rolling the dice…</item>
+        <item>Putting on my thinking cap…</item>
+        <item>Looking to the stars for guidance…</item>
+        <item>Consulting the spirits…</item>
+        <item>How did I get here?</item>
+        <item>Shaking the magic 8 ball…</item>
+        <item>Waiting for inspiration…</item>
+    </string-array>
+    <integer name="randomizer_duration">1000</integer>
 </resources>

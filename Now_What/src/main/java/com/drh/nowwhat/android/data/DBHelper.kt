@@ -51,7 +51,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
     private fun initDb(db: SQLiteDatabase) {
         // create default categories
-        context.resources.getStringArray(R.array.categories).mapIndexed { i, c ->
+        context.resources.getStringArray(R.array.default_categories).mapIndexed { i, c ->
             val values = ContentValues()
             values.put(NAME_COL, c)
             values.put(SORT_COL, i)

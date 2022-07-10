@@ -1,4 +1,0 @@
-TODO for V1
-
-- add a fun randomizer animation
-- more docstrings
