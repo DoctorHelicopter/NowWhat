@@ -12,7 +12,7 @@
     <string name="name">Name</string>
     <string name="new_category">New Category</string>
     <string name="new_item">New Item</string>
-    <string name="no_categories_error">No categories found!</string>
+    <string name="no_choices_error">No choices found! Go add some to a category!</string>
     <string name="randomizer">Now What?</string>
     <string name="save">Save</string>
     <string-array name="default_categories">

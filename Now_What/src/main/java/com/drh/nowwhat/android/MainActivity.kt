@@ -42,11 +42,9 @@ class MainActivity : AppCompatActivity() {
             val progressBarText: TextView = findViewById(R.id.randomizer_progress_text)
 
             val categories = db.getEnabledCategoriesWithChoices()
-            val allOptions = categories.map { c -> c.choices.map { Pair(c, it) } }.flatten()
-            val (selectedCategory, selectedChoice) = allOptions[Random.nextInt(allOptions.size)]
 
             if (categories.isEmpty()) {
-                categoryView.text = getString(R.string.no_categories_error)
+                categoryView.text = getString(R.string.no_choices_error)
                 categoryView.visibility = VISIBLE
                 choiceView.visibility = INVISIBLE
             } else {
@@ -67,6 +65,8 @@ class MainActivity : AppCompatActivity() {
                             progressBar.visibility = INVISIBLE
                             progressBarText.visibility = INVISIBLE
                             // display choice
+                            val allOptions = categories.map { c -> c.choices.map { Pair(c, it) } }.flatten()
+                            val (selectedCategory, selectedChoice) = allOptions[Random.nextInt(allOptions.size)]
                             categoryView.text = selectedCategory.name
                             choiceView.text = selectedChoice.name
                             categoryView.visibility = VISIBLE

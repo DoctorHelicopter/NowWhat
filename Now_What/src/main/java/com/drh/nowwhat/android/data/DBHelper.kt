@@ -46,6 +46,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
         // put DB migrations here when they exist
+        db.execSQL("DROP TABLE $CATEGORIES_TABLE")
+        db.execSQL("DROP TABLE $CHOICES_TABLE")
         onCreate(db)
     }
 
