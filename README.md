@@ -1,4 +1,4 @@
-# NowWhat
+# Now What?
 
 Ever finish binging a show and think to yourself: "Now what"? Ever sit through the credits of
 a video game, trying to figure out how you're ever going to follow that up? Here's a tool to help!
