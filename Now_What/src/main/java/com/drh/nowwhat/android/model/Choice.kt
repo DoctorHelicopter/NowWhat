@@ -5,5 +5,6 @@ data class Choice(
     val categoryId: Int,
     val name: String,
     val enabled: Boolean,
-    val sort: Int
+    val sort: Int,
+    val favorite: Boolean
 )

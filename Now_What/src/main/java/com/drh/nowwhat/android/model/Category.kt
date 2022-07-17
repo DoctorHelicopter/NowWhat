@@ -5,5 +5,6 @@ data class Category(
     val name: String,
     val enabled: Boolean,
     val sort: Int,
+    val favorite: Boolean,
     val choices: List<Choice> = emptyList()
 )
