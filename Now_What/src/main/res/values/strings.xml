@@ -15,6 +15,7 @@
     <string name="no_choices_error">No choices found! Go add some to a category!</string>
     <string name="randomizer">Now What?</string>
     <string name="save">Save</string>
+    <string name="favorite_icon">Favorite</string>
     <string-array name="default_categories">
         <item>TV Shows</item>
         <item>Movies</item>

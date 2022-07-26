@@ -32,7 +32,7 @@ class ChoiceActivity : AppCompatActivity(),
 
     private fun displayItems(categoryId: Int) {
         val db = DBHelper(this, null)
-        val choices = db.getCategoryChoices(categoryId)
+        val choices = db.getCategoryChoices(categoryId).toMutableList()
         // create view
         val recyclerView = findViewById<RecyclerView>(R.id.item_recycler)
         // for performance, as layout size is fixed
