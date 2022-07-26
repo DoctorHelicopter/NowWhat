@@ -233,11 +233,11 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                 while (cursor.moveToNext()) {
                     val c = Choice(
                         cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL)),
                         cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
                         cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1,
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL))
                     )
                     choices.add(c)
                 }
@@ -276,7 +276,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                         val choiceSort = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+SORT_COL))
                         val choiceFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+FAVORITE_COL)) == 1
                         val category = Category(categoryId, categoryName, true, categorySort, categoryFavorite, emptyList())
-                        val choice = Choice(choiceId, categoryId, choiceName, true, choiceSort, choiceFavorite)
+                        val choice = Choice(choiceId, choiceName, true, choiceSort, choiceFavorite, categoryId)
                         pairs += Pair(category, choice)
                     }
                 }

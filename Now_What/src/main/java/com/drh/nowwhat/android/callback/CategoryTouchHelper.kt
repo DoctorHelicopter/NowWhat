@@ -42,20 +42,6 @@ object CategoryTouchHelper {
                 //   look into it
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     //on swipe tells you when an item is swiped left or right from its position ( swipe to delete)
-                    if (direction == LEFT) {
-                        val recyclerView = viewHolder.itemView.parent as RecyclerView
-                        val adapter = recyclerView.adapter as CategoriesListAdapter
-                        val position = viewHolder.adapterPosition
-                        val context = adapter.context
-                        val category = adapter.dataset[position]
-                        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-                        builder.setMessage(context.getString(R.string.delete_item, category.name))
-                        builder.setPositiveButton(context.getString(R.string.delete)) { _, _ ->
-                            adapter.deleteItem(position)
-                        }.setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
-                            dialog.cancel()
-                        }.show() //show alert dialog
-                    }
                 }
 
                 override fun onSelectedChanged(

@@ -37,8 +37,6 @@ object ChoiceTouchHelper {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     //on swipe tells you when an item is swiped left or right from its position ( swipe to delete)
-                    // TODO confirmation dialog
-                    // TODO update database with adapter callback
                 }
 
                 override fun onSelectedChanged(
