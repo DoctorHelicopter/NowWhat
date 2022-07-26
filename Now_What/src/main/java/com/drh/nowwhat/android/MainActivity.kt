@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
                             val eligibleOptions = allOptions.toMutableList()
                             // add favorited choices twice (four times if the category is also favorited)
                             allOptions.forEach { if (it.second.favorite) eligibleOptions.add(it) }
+                            eligibleOptions.shuffle()
                             val (selectedCategory, selectedChoice) = eligibleOptions[Random.nextInt(allOptions.size)]
                             categoryView.text = selectedCategory.name
                             choiceView.text = selectedChoice.name
