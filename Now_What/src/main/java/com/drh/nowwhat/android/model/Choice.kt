@@ -1,9 +1,10 @@
 package com.drh.nowwhat.android.model
 
 data class Choice(
-    val id: Int,
-    val categoryId: Int,
-    val name: String,
-    val enabled: Boolean,
-    val sort: Int
-)
+    override val id: Int,
+    override val name: String,
+    override val enabled: Boolean,
+    override val sort: Int,
+    override val favorite: Boolean,
+    val categoryId: Int
+): ListItem

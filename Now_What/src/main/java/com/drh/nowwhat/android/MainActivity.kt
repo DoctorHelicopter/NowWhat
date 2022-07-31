@@ -65,8 +65,17 @@ class MainActivity : AppCompatActivity() {
                             progressBar.visibility = INVISIBLE
                             progressBarText.visibility = INVISIBLE
                             // display choice
-                            val allOptions = categories.map { c -> c.choices.map { Pair(c, it) } }.flatten()
-                            val (selectedCategory, selectedChoice) = allOptions[Random.nextInt(allOptions.size)]
+                            val eligibleCategories = categories.toMutableList()
+                            // add favorited categories twice
+                            categories.forEach { if (it.favorite) eligibleCategories.add(it) }
+                            val allOptions = eligibleCategories
+                                .map { c -> c.choices.map { Pair(c, it) } }
+                                .flatten()
+                            val eligibleOptions = allOptions.toMutableList()
+                            // add favorited choices twice (four times if the category is also favorited)
+                            allOptions.forEach { if (it.second.favorite) eligibleOptions.add(it) }
+                            eligibleOptions.shuffle()
+                            val (selectedCategory, selectedChoice) = eligibleOptions[Random.nextInt(allOptions.size)]
                             categoryView.text = selectedCategory.name
                             choiceView.text = selectedChoice.name
                             categoryView.visibility = VISIBLE

@@ -24,11 +24,10 @@ we've got you covered.
 
 ## Roadmap
 
-- Link to streaming/gaming platforms to import watchlists
-- Weighted choices (i.e. make it 2x more likely to select a TV show vs a game)
 - Favorites (extra weight for favorited items)
 - Saved filter sets for randomization - i.e. have a button for 'select media (TV/movies)' or 'select a game (all platforms)'
 - Platform selection and tagging, randomizer can select based on platform/tags
+- Link to streaming/gaming platforms to import watchlists
 - Items can have number of participants, randomizer can filter based on min/max
 - Login and account-based saves (share your lists between devices)
 - Add friends, share lists (?)

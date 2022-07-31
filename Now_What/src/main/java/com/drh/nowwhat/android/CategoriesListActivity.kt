@@ -10,7 +10,6 @@ import com.drh.nowwhat.android.adapter.CategoriesListAdapter
 import com.drh.nowwhat.android.callback.CategoryTouchHelper
 import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.dialog.NewCategoryDialog
-import com.drh.nowwhat.android.model.Category
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -49,8 +48,7 @@ class CategoriesListActivity : AppCompatActivity(),
         val editButtonsVisible = intent.extras?.getBoolean("editButtonsVisible") ?: false
         val adapter = CategoriesListAdapter(
             this,
-            categories,
-            clickListener = { categoryClickListener(it) },
+            categories.toMutableList(),
             editButtonsVisible = editButtonsVisible,
             refreshCallback = ::refreshList
         )
@@ -70,14 +68,6 @@ class CategoriesListActivity : AppCompatActivity(),
         intent.putExtra("editButtonsVisible", true)
         startActivity(intent)
         overridePendingTransition(0, 0);
-    }
-
-    private fun categoryClickListener(category: Category) {
-        // set item click listener
-        val intent = Intent(this, ChoiceActivity::class.java)
-            .putExtra("categoryName", category.name)
-            .putExtra("categoryId", category.id)
-        startActivity(intent)
     }
 
     // The dialog fragment receives a reference to this Activity through the

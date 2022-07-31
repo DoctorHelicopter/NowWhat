@@ -19,7 +19,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
               $ID_COL INTEGER PRIMARY KEY,
               $NAME_COL TEXT NOT NULL,
               $ENABLED_COL INTEGER DEFAULT 1,
-              $SORT_COL INTEGER DEFAULT 0
+              $SORT_COL INTEGER DEFAULT 0,
+              $FAVORITE_COL INTEGER DEFAULT 0
             )
         """.trimIndent()
         val choicesQuery = """
@@ -28,7 +29,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
               $CATEGORY_ID_COL INTEGER NOT NULL,
               $NAME_COL TEXT NOT NULL,
               $ENABLED_COL INTEGER DEFAULT 1,
-              $SORT_COL INTEGER DEFAULT 0
+              $SORT_COL INTEGER DEFAULT 0,
+              $FAVORITE_COL INTEGER DEFAULT 0
             )
         """.trimIndent()
 
@@ -45,10 +47,15 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
     }
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
-        // put DB migrations here when they exist
-        db.execSQL("DROP TABLE $CATEGORIES_TABLE")
-        db.execSQL("DROP TABLE $CHOICES_TABLE")
-        onCreate(db)
+        val dbUpgrades = DBUpgrades(db)
+        for (v in p1 until p2) { // upgrade one version at a time if catchup is needed
+            when (v) {
+                // current version -> upgrade to new version
+                2 -> dbUpgrades.upgradeFrom2()
+                // support more migrations as needed
+                else -> throw IllegalStateException("Invalid DB migration path: $p1 to $p2")
+            }
+        }
     }
 
     private fun initDb(db: SQLiteDatabase) {
@@ -91,6 +98,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         val values = ContentValues()
         values.put(NAME_COL, category.name)
         values.put(ENABLED_COL, category.enabled)
+        values.put(FAVORITE_COL, category.favorite)
         this.writableDatabase.use { db ->
             db.update(CATEGORIES_TABLE, values, "$ID_COL = ${category.id}", null)
         }
@@ -127,7 +135,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                             cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
                             cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
-                            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL))
+                            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1
                         )
                     }
                 }
@@ -145,7 +154,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                             cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
                             cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
                             cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
-                            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL))
+                            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1
                         )
                         categories.add(c)
                     }
@@ -186,6 +196,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         val values = ContentValues()
         values.put(NAME_COL, choice.name)
         values.put(ENABLED_COL, choice.enabled)
+        values.put(FAVORITE_COL, choice.favorite)
         this.writableDatabase.use { db ->
             db.update(CHOICES_TABLE, values, "$ID_COL = ${choice.id}", null)
         }
@@ -222,10 +233,11 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                 while (cursor.moveToNext()) {
                     val c = Choice(
                         cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL)),
                         cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
-                        cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL))
+                        cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1,
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL))
                     )
                     choices.add(c)
                 }
@@ -242,8 +254,10 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                 SELECT
                     ca.$NAME_COL AS $CATEGORY,
                     ca.$SORT_COL AS $CATEGORY$SORT_COL,
+                    ca.$FAVORITE_COL AS $CATEGORY$FAVORITE_COL,
                     ch.$NAME_COL AS $CHOICE,
                     ch.$SORT_COL AS $CHOICE$SORT_COL,
+                    ch.$FAVORITE_COL AS $CHOICE$FAVORITE_COL,
                     ch.$CATEGORY_ID_COL,
                     ch.$ID_COL
                 FROM $CATEGORIES_TABLE ca 
@@ -256,11 +270,13 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                         val categoryName = cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY))
                         val categoryId = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL))
                         val categorySort = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY+SORT_COL))
+                        val categoryFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY+FAVORITE_COL)) == 1
                         val choiceName = cursor.getString(cursor.getColumnIndexOrThrow(CHOICE))
                         val choiceId = cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL))
                         val choiceSort = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+SORT_COL))
-                        val category = Category(categoryId, categoryName, true, categorySort, emptyList())
-                        val choice = Choice(choiceId, categoryId, choiceName, true, choiceSort)
+                        val choiceFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+FAVORITE_COL)) == 1
+                        val category = Category(categoryId, categoryName, true, categorySort, categoryFavorite, emptyList())
+                        val choice = Choice(choiceId, choiceName, true, choiceSort, choiceFavorite, categoryId)
                         pairs += Pair(category, choice)
                     }
                 }
@@ -271,19 +287,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         return mapper.map { (category, choices) -> category.copy(choices = choices) }
     }
 
-    companion object{
+    companion object {
         private const val DATABASE_NAME = "NOW_WHAT"
-        private const val DATABASE_VERSION = 2
-
-        const val CATEGORIES_TABLE = "categories"
-        const val CHOICES_TABLE = "choices"
-        const val ID_COL = "id"
-        const val CATEGORY_ID_COL = "category_id"
-        const val NAME_COL = "name"
-        const val ENABLED_COL = "enabled"
-        const val SORT_COL = "sort"
-
-        const val CATEGORY = "category"
-        const val CHOICE = "choice"
+        private const val DATABASE_VERSION = 3
     }
 }
