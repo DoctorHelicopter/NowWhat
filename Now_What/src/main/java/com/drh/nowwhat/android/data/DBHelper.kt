@@ -213,13 +213,15 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                 null
             ).use { cursor ->
                 while (cursor.moveToNext()) {
+                    val platformColIndex = cursor.getColumnIndexOrThrow(PLATFORM_ID_COL)
                     val c = Choice(
                         cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
                         cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
                         cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
                         cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1,
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL))
+                        cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL)),
+                        if (cursor.isNull(platformColIndex)) null else cursor.getInt(platformColIndex)
                     )
                     choices.add(c)
                 }
@@ -249,6 +251,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             null
             ).use { cursor ->
                     while (cursor.moveToNext()) {
+                        // TODO create some generic parsers this is stupid
                         val categoryName = cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY))
                         val categoryId = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL))
                         val categorySort = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY+SORT_COL))
@@ -257,8 +260,10 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                         val choiceId = cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL))
                         val choiceSort = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+SORT_COL))
                         val choiceFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+FAVORITE_COL)) == 1
+                        val platformColIndex = cursor.getColumnIndexOrThrow(PLATFORM_ID_COL)
+                        val choicePlatform = if (cursor.isNull(platformColIndex)) null else cursor.getInt(platformColIndex)
                         val category = Category(categoryId, categoryName, true, categorySort, categoryFavorite, emptyList())
-                        val choice = Choice(choiceId, choiceName, true, choiceSort, choiceFavorite, categoryId)
+                        val choice = Choice(choiceId, choiceName, true, choiceSort, choiceFavorite, categoryId, choicePlatform)
                         pairs += Pair(category, choice)
                     }
                 }
