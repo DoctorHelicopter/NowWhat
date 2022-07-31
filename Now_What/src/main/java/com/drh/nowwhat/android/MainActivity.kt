@@ -26,10 +26,15 @@ class MainActivity : AppCompatActivity() {
         // set view to main
         setContentView(R.layout.activity_main)
 
-        // configure button listener
+        // configure button listeners
         val categoriesButton: Button = findViewById(R.id.categories_button)
         categoriesButton.setOnClickListener {
             val intent = Intent(this, CategoriesListActivity::class.java)
+            startActivity(intent)
+        }
+        val platformsButton: Button = findViewById(R.id.platforms_button)
+        platformsButton.setOnClickListener {
+            val intent = Intent(this, PlatformsListActivity::class.java)
             startActivity(intent)
         }
 

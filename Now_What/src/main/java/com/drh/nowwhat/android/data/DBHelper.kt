@@ -14,28 +14,9 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
     // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
-        val categoriesQuery = """
-            CREATE TABLE IF NOT EXISTS $CATEGORIES_TABLE  (
-              $ID_COL INTEGER PRIMARY KEY,
-              $NAME_COL TEXT NOT NULL,
-              $ENABLED_COL INTEGER DEFAULT 1,
-              $SORT_COL INTEGER DEFAULT 0,
-              $FAVORITE_COL INTEGER DEFAULT 0
-            )
-        """.trimIndent()
-        val choicesQuery = """
-            CREATE TABLE IF NOT EXISTS $CHOICES_TABLE (
-              $ID_COL INTEGER PRIMARY KEY,
-              $CATEGORY_ID_COL INTEGER NOT NULL,
-              $NAME_COL TEXT NOT NULL,
-              $ENABLED_COL INTEGER DEFAULT 1,
-              $SORT_COL INTEGER DEFAULT 0,
-              $FAVORITE_COL INTEGER DEFAULT 0
-            )
-        """.trimIndent()
-
-        db.execSQL(categoriesQuery)
-        db.execSQL(choicesQuery)
+        db.execSQL(CATEGORIES_TABLE_CREATE_SQL)
+        db.execSQL(CHOICES_TABLE_CREATE_SQL)
+        db.execSQL(PLATFORMS_TABLE_CREATE_SQL)
 
         // only init data if there's none present
         db.rawQuery("SELECT COUNT(*) FROM $CATEGORIES_TABLE", null).use { cursor ->
@@ -52,6 +33,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             when (v) {
                 // current version -> upgrade to new version
                 2 -> dbUpgrades.upgradeFrom2()
+                3 -> dbUpgrades.upgradeFrom3()
                 // support more migrations as needed
                 else -> throw IllegalStateException("Invalid DB migration path: $p1 to $p2")
             }
@@ -289,6 +271,6 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
 
     companion object {
         private const val DATABASE_NAME = "NOW_WHAT"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
     }
 }

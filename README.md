@@ -19,16 +19,22 @@ we've got you covered.
 - Preset categories with ability to add/edit/delete/re-order
 - Free-form input for items in each category, with the ability to add/edit/delete/re-order those as well
 - Toggle each category or item individually
-
+- Favorites (extra weight for favorited items)
 
 
 ## Roadmap
 
-- Favorites (extra weight for favorited items)
-- Saved filter sets for randomization - i.e. have a button for 'select media (TV/movies)' or 'select a game (all platforms)'
-- Platform selection and tagging, randomizer can select based on platform/tags
+- Platform selection and tagging
+  - New section next to categories for platforms
+    - Both buttons should now indicate how many items are toggled on
+  - Toggled the same way - no favorites though (?)
+  - Add ability to tag items with platform (REQUIRED FIELD)
+  - If specific platforms are toggled on, only randomize items with that tag
 - Link to streaming/gaming platforms to import watchlists
-- Items can have number of participants, randomizer can filter based on min/max
+  - Add fixed list (more to come) of integrations available (other platforms can be added without integration)
+  - Auto-fill / create (if not exists) categories for items in watchlist / playlist on those platforms and tag them properly
+  - Sync on app startup, also give refresh button
+- Items can have number of participants (nullable), randomizer can filter based on min/max/equals
 - Login and account-based saves (share your lists between devices)
 - Add friends, share lists (?)
 - Recommendations based on friend's lists and favorites (?)
