@@ -14,7 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 // TODO make this work for platforms not categories
-class PlatformsListActivity : AppCompatActivity(),
+class PlatformsActivity : AppCompatActivity(),
     NewCategoryDialog.NewCategoryDialogListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {

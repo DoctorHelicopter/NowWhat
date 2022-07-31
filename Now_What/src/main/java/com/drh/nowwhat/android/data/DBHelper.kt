@@ -2,6 +2,7 @@ package com.drh.nowwhat.android.data
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.drh.nowwhat.android.R
@@ -32,6 +33,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         for (v in p1 until p2) { // upgrade one version at a time if catchup is needed
             when (v) {
                 // current version -> upgrade to new version
+                // TODO is there a better way to do this?
                 2 -> dbUpgrades.upgradeFrom2()
                 3 -> dbUpgrades.upgradeFrom3()
                 // support more migrations as needed
@@ -113,13 +115,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             db.rawQuery("SELECT * FROM $CATEGORIES_TABLE WHERE $ID_COL = $id", null)
                 .use { cursor ->
                     while (cursor.moveToNext()) {
-                        category = Category(
-                            cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
-                            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1
-                        )
+                        category = categoryParser(cursor)
                     }
                 }
         }
@@ -132,14 +128,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             db.rawQuery("SELECT * FROM $CATEGORIES_TABLE ORDER BY $SORT_COL", null)
                 .use { cursor ->
                     while (cursor.moveToNext()) {
-                        val c = Category(
-                            cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
-                            cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
-                            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
-                            cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1
-                        )
-                        categories.add(c)
+                        categories.add(categoryParser(cursor))
                     }
                 }
         }
@@ -213,17 +202,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
                 null
             ).use { cursor ->
                 while (cursor.moveToNext()) {
-                    val platformColIndex = cursor.getColumnIndexOrThrow(PLATFORM_ID_COL)
-                    val c = Choice(
-                        cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
-                        cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1,
-                        cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL)),
-                        if (cursor.isNull(platformColIndex)) null else cursor.getInt(platformColIndex)
-                    )
-                    choices.add(c)
+                    choices.add(choiceParser(cursor))
                 }
             }
         }
@@ -236,14 +215,14 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             db.rawQuery(
                 """
                 SELECT
-                    ca.$NAME_COL AS $CATEGORY,
+                    ca.$NAME_COL AS $CATEGORY$NAME_COL,
                     ca.$SORT_COL AS $CATEGORY$SORT_COL,
                     ca.$FAVORITE_COL AS $CATEGORY$FAVORITE_COL,
-                    ch.$NAME_COL AS $CHOICE,
+                    ch.$NAME_COL AS $CHOICE$NAME_COL,
                     ch.$SORT_COL AS $CHOICE$SORT_COL,
                     ch.$FAVORITE_COL AS $CHOICE$FAVORITE_COL,
-                    ch.$CATEGORY_ID_COL,
-                    ch.$ID_COL
+                    ch.$CATEGORY_ID_COL AS $CATEGORY$ID_COL,
+                    ch.$ID_COL AS $CHOICE$ID_COL
                 FROM $CATEGORIES_TABLE ca 
                 INNER JOIN $CHOICES_TABLE ch ON ca.$ID_COL = ch.$CATEGORY_ID_COL
                 WHERE ca.$ENABLED_COL = 1 AND ch.$ENABLED_COL = 1
@@ -251,19 +230,8 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             null
             ).use { cursor ->
                     while (cursor.moveToNext()) {
-                        // TODO create some generic parsers this is stupid
-                        val categoryName = cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY))
-                        val categoryId = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL))
-                        val categorySort = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY+SORT_COL))
-                        val categoryFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY+FAVORITE_COL)) == 1
-                        val choiceName = cursor.getString(cursor.getColumnIndexOrThrow(CHOICE))
-                        val choiceId = cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL))
-                        val choiceSort = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+SORT_COL))
-                        val choiceFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(CHOICE+FAVORITE_COL)) == 1
-                        val platformColIndex = cursor.getColumnIndexOrThrow(PLATFORM_ID_COL)
-                        val choicePlatform = if (cursor.isNull(platformColIndex)) null else cursor.getInt(platformColIndex)
-                        val category = Category(categoryId, categoryName, true, categorySort, categoryFavorite, emptyList())
-                        val choice = Choice(choiceId, choiceName, true, choiceSort, choiceFavorite, categoryId, choicePlatform)
+                        val category = categoryParser(cursor, prefix = true)
+                        val choice = choiceParser(cursor, prefix = true)
                         pairs += Pair(category, choice)
                     }
                 }
@@ -272,6 +240,31 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             .groupBy { it.first }
             .map { (category, items) -> category to items.map { it.second } }
         return mapper.map { (category, choices) -> category.copy(choices = choices) }
+    }
+
+    fun choiceParser(cursor: Cursor, prefix: Boolean = false): Choice {
+        val p = if (prefix) CHOICE else ""
+        val platformColIndex = cursor.getColumnIndexOrThrow(p + PLATFORM_ID_COL)
+        return Choice(
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + ID_COL)),
+            cursor.getString(cursor.getColumnIndexOrThrow(p + NAME_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + ENABLED_COL)) == 1,
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + SORT_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + FAVORITE_COL)) == 1,
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + CATEGORY_ID_COL)),
+            if (cursor.isNull(platformColIndex)) null else cursor.getInt(platformColIndex)
+        )
+    }
+
+    fun categoryParser(cursor: Cursor, prefix: Boolean = false): Category {
+        val p = if (prefix) CATEGORY else ""
+        return Category(
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + ID_COL)),
+            cursor.getString(cursor.getColumnIndexOrThrow(p + NAME_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + ENABLED_COL)) == 1,
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + SORT_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + FAVORITE_COL)) == 1
+        )
     }
 
     companion object {

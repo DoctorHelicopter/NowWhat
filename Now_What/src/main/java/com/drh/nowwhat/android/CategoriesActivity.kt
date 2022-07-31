@@ -13,7 +13,7 @@ import com.drh.nowwhat.android.dialog.NewCategoryDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class CategoriesListActivity : AppCompatActivity(),
+class CategoriesActivity : AppCompatActivity(),
     NewCategoryDialog.NewCategoryDialogListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {

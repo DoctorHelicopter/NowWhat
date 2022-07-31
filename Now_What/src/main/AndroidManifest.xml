@@ -17,11 +17,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CategoriesListActivity"
+            android:name=".CategoriesActivity"
             android:exported="true">
         </activity>
         <activity
             android:name=".ChoiceActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".PlatformsActivity"
             android:exported="true">
         </activity>
     </application>

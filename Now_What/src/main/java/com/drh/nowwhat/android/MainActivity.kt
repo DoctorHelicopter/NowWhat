@@ -2,14 +2,11 @@ package com.drh.nowwhat.android
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -29,12 +26,12 @@ class MainActivity : AppCompatActivity() {
         // configure button listeners
         val categoriesButton: Button = findViewById(R.id.categories_button)
         categoriesButton.setOnClickListener {
-            val intent = Intent(this, CategoriesListActivity::class.java)
+            val intent = Intent(this, CategoriesActivity::class.java)
             startActivity(intent)
         }
         val platformsButton: Button = findViewById(R.id.platforms_button)
         platformsButton.setOnClickListener {
-            val intent = Intent(this, PlatformsListActivity::class.java)
+            val intent = Intent(this, PlatformsActivity::class.java)
             startActivity(intent)
         }
 
