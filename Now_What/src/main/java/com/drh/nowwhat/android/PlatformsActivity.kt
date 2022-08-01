@@ -5,48 +5,53 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
-import com.drh.nowwhat.android.adapter.ChoiceAdapter
-import com.drh.nowwhat.android.callback.ChoiceTouchHelper
+import com.drh.nowwhat.android.adapter.PlatformsListAdapter
+import com.drh.nowwhat.android.callback.PlatformTouchHelper
 import com.drh.nowwhat.android.data.DBHelper
-import com.drh.nowwhat.android.dialog.NewChoiceDialog
+import com.drh.nowwhat.android.dialog.NewPlatformDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class ChoiceActivity : AppCompatActivity(),
-    NewChoiceDialog.NewChoiceDialogListener {
+
+class PlatformsActivity : AppCompatActivity(),
+    NewPlatformDialog.NewPlatformDialogListener {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // set view to category content
+        // set view to categories list
         setContentView(R.layout.item_list)
-        val categoryId = intent.extras?.getInt("categoryId")!! // TODO better null safety
-        displayItems(categoryId)
+        displayPlatforms()
 
-        // configure button listener
-        val newChoiceButton: FloatingActionButton = findViewById(R.id.new_item_button)
-        newChoiceButton.setOnClickListener {
-            val dialog = NewChoiceDialog(categoryId)
-            dialog.show(supportFragmentManager, "NewItemDialog")
+        // configure new item button listener
+        val newCategoryButton: FloatingActionButton = findViewById(R.id.new_item_button)
+        newCategoryButton.setOnClickListener {
+            val dialog = NewPlatformDialog()
+            dialog.show(supportFragmentManager, "NewCategoryDialog")
         }
     }
 
-    private fun displayItems(categoryId: Int) {
+    private fun displayPlatforms() {
         val db = DBHelper(this, null)
-        val choices = db.getCategoryChoices(categoryId).toMutableList()
-        val platforms = db.getPlatforms().associateBy { it.id }
+        // initialize data
+        val platforms = db.getPlatforms()
         // create view
         val recyclerView = findViewById<RecyclerView>(R.id.item_recycler)
         // for performance, as layout size is fixed
         recyclerView.setHasFixedSize(true)
-        // link dataset to recycler
-        val categoryHeader = findViewById<TextView>(R.id.item_header_text)
-        categoryHeader.text = intent.extras?.getString("categoryName")
 
+        val platformHeader = findViewById<TextView>(R.id.item_header_text)
+        platformHeader.text = getString(R.string.platform_list_header)
         // attach touch helper for drag/drop and swipe
-        ChoiceTouchHelper.helper.attachToRecyclerView(recyclerView)
-        // attach item adapter
+        PlatformTouchHelper.helper.attachToRecyclerView(recyclerView)
+        // configure item adapter
         val editButtonsVisible = intent.extras?.getBoolean("editButtonsVisible") ?: false
-        val adapter = ChoiceAdapter(this, choices, platforms, editButtonsVisible, ::refreshList)
+        val adapter = PlatformsListAdapter(
+            this,
+            platforms.toMutableList(),
+            editButtonsVisible = editButtonsVisible,
+            refreshCallback = ::refreshList
+        )
         recyclerView.adapter = adapter
 
         // configure edit button listener
@@ -59,18 +64,18 @@ class ChoiceActivity : AppCompatActivity(),
 
     private fun refreshList() {
         finish()
-        overridePendingTransition(0, 0)
+        overridePendingTransition(0, 0);
         intent.putExtra("editButtonsVisible", true)
         startActivity(intent)
-        overridePendingTransition(0, 0)
+        overridePendingTransition(0, 0);
     }
 
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the DialogListener interface
-    override fun onDialogPositiveClick(dialog: DialogFragment, categoryId: Int) {
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
         // User touched the dialog's positive button
-        displayItems(categoryId)
+        displayPlatforms()
     }
 }
 

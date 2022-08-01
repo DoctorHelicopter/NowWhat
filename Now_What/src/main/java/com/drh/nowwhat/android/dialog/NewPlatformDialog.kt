@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.data.DBHelper
 
-class NewCategoryDialog : DialogFragment() {
+class NewPlatformDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = this.context ?: throw IllegalStateException("Context cannot be null")
         return activity?.let {
@@ -23,7 +23,7 @@ class NewCategoryDialog : DialogFragment() {
                 .setPositiveButton(R.string.save) { _, _ ->
                     // save new category
                     val nameView = inputView.findViewById<TextView>(R.id.text_input_field)
-                    db.addCategory(nameView.text.toString())
+                    db.addPlatform(nameView.text.toString())
                     listener.onDialogPositiveClick(this)
                 }
                 .setNegativeButton(R.string.cancel) { dialog, _ ->
@@ -35,12 +35,12 @@ class NewCategoryDialog : DialogFragment() {
     }
 
     // Use this instance of the interface to deliver action events
-    private lateinit var listener: NewCategoryDialogListener
+    private lateinit var listener: NewPlatformDialogListener
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
      * Each method passes the NewCategoryDialogListener in case the host needs to query it. */
-    interface NewCategoryDialogListener {
+    interface NewPlatformDialogListener {
         fun onDialogPositiveClick(dialog: DialogFragment)
     }
 
@@ -49,12 +49,12 @@ class NewCategoryDialog : DialogFragment() {
         super.onAttach(context)
         // Verify that the host activity implements the callback interface
         try {
-            // Instantiate the NewCategoryDialogListener so we can send events to the host
-            listener = context as NewCategoryDialogListener
+            // Instantiate the NewPlatformDialogListener so we can send events to the host
+            listener = context as NewPlatformDialogListener
         } catch (e: ClassCastException) {
             // The activity doesn't implement the interface, throw exception
             throw ClassCastException((context.toString() +
-                    " must implement NewCategoryDialogListener"))
+                    " must implement NewPlatformDialogListener"))
         }
     }
 }

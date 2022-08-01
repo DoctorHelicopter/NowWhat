@@ -3,10 +3,10 @@ package com.drh.nowwhat.android.callback
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
-import com.drh.nowwhat.android.adapter.CategoriesListAdapter
+import com.drh.nowwhat.android.adapter.PlatformsListAdapter
 
 
-object CategoryTouchHelper {
+object PlatformTouchHelper {
     val helper by lazy {
         val simpleItemTouchCallback =
             object : ItemTouchHelper.SimpleCallback(UP or DOWN or START or END, 0) {
@@ -18,7 +18,7 @@ object CategoryTouchHelper {
                 ): Boolean {
                     //on move lets you check if an item has been moved from its position either up or down
                     // getting the adapter
-                    val adapter = recyclerView.adapter as CategoriesListAdapter
+                    val adapter = recyclerView.adapter as PlatformsListAdapter
 
                     //the position from where item has been moved
                     val from = viewHolder.adapterPosition

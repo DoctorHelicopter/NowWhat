@@ -1,32 +1,31 @@
 package com.drh.nowwhat.android.adapter
 
 import android.content.Context
-import android.graphics.Typeface
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.content.Intent
+import android.view.*
 import androidx.recyclerview.widget.RecyclerView
-import com.drh.nowwhat.android.*
+import com.drh.nowwhat.android.ChoiceActivity
+import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.data.DBHelper
-import com.drh.nowwhat.android.model.Choice
+import com.drh.nowwhat.android.model.Category
 import com.drh.nowwhat.android.model.ListItem
 import com.drh.nowwhat.android.model.Platform
 
-class ChoiceAdapter(
+
+class PlatformsListAdapter(
     val context: Context,
-    private var dataset: MutableList<Choice>,
-    private var platforms: Map<Int, Platform>,
+    var dataset: MutableList<Platform>,
     private var editButtonsVisible: Boolean,
     private val refreshCallback: () -> Unit
-) : RecyclerView.Adapter<ListItemViewHolder>(){
+) : RecyclerView.Adapter<ListItemViewHolder>() {
 
     private val helper = AdapterHelper(context, dataset as MutableList<ListItem>)
     private val db = DBHelper(context, null)
-    private var currentCategoryId: Int = -1
 
-    private val datasetCallback: () -> Unit = { 
-        dataset = db.getCategoryChoices(currentCategoryId).sortedBy { c -> c.sort }.toMutableList() 
+    private val datasetCallback: () -> Unit = {
+        dataset = db.getPlatforms().sortedBy { it.sort }.toMutableList()
     }
-    
+
     private val currentItem: (Int) -> ListItem = { dataset[it] }
 
     /**
@@ -35,7 +34,7 @@ class ChoiceAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         // create a new view
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tagged_card_toggle_item, parent, false)
+            .inflate(R.layout.card_toggle_item, parent, false)
         return ListItemViewHolder(adapterLayout)
     }
 
@@ -45,17 +44,13 @@ class ChoiceAdapter(
     override fun onBindViewHolder(holder: ListItemViewHolder, position: Int) {
         val item = dataset[position]
         holder.textView.text = item.name
-        if (item.platformId != 0) { // only set tag and typeface for non-default
-            platforms[item.platformId]?.let { p ->
-                holder.tagTextView?.text = p.name
-                holder.tagTextView?.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
-            }
-        }
         holder.itemToggle.isChecked = item.enabled
+        // set listener for each item click
+        // TODO eventually make this open an integration dialog
+        // holder.itemView.setOnClickListener {}
         holder.itemToggle.setOnCheckedChangeListener { _, isChecked ->
             helper.toggleItem(item, isChecked)
         }
-        currentCategoryId = item.categoryId
         helper.setEditButtonVisibility(holder, position, editButtonsVisible, refreshCallback)
         helper.setFavoriteClickListener(holder, position)
         helper.setFavoriteButton(holder, item.favorite)
@@ -63,12 +58,10 @@ class ChoiceAdapter(
 
     fun toggleEditButtons(recyclerView: RecyclerView) {
         editButtonsVisible = !editButtonsVisible
-        (0 until recyclerView.childCount).forEach {
-            val view = recyclerView.getChildAt(it)
+        (0 until recyclerView.childCount).forEach { i ->
+            val view = recyclerView.getChildAt(i)
             val holder = ListItemViewHolder(view)
             val position = recyclerView.getChildAdapterPosition(view)
-            val choice = dataset[position]
-            currentCategoryId = choice.categoryId
             helper.setEditButtonVisibility(holder, position, editButtonsVisible, refreshCallback)
         }
     }
@@ -84,8 +77,7 @@ class ChoiceAdapter(
     fun moveItem(from: Int, to: Int) {
         val item = dataset[from]
 
-        db.updateChoiceSort(item, to)
-        currentCategoryId = item.categoryId
+        db.updatePlatformSort(item, to)
         datasetCallback()
     }
 }

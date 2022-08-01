@@ -4,7 +4,9 @@ import android.app.AlertDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SwitchCompat
@@ -16,6 +18,7 @@ import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.model.Category
 import com.drh.nowwhat.android.model.Choice
 import com.drh.nowwhat.android.model.ListItem
+import com.drh.nowwhat.android.model.Platform
 import com.google.android.material.button.MaterialButton
 import java.io.InvalidObjectException
 
@@ -30,6 +33,9 @@ class ListItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val deleteItemButton: MaterialButton = view.findViewById(R.id.delete_item_button)
     val favoriteButton: ImageView = view.findViewById(R.id.favorite_icon)
     val constraintLayout: ConstraintLayout = view.findViewById(R.id.item_constraint_layout)
+    val tagTextView: TextView? = if (view.sourceLayoutResId == R.layout.tagged_card_toggle_item){
+        view.findViewById(R.id.tag_text)
+    } else null
 }
 
 class AdapterHelper(val context: Context, private var dataset: MutableList<ListItem>) {
@@ -40,6 +46,7 @@ class AdapterHelper(val context: Context, private var dataset: MutableList<ListI
         dataset = when (item) {
             is Category -> db.getCategories().sortedBy { it.sort }.toMutableList()
             is Choice -> db.getCategoryChoices(categoryId).sortedBy { it.sort }.toMutableList()
+            is Platform -> db.getPlatforms().sortedBy { it.sort }.toMutableList()
             else -> throw InvalidObjectException("Item is neither category nor choice")
         }
     }
@@ -74,6 +81,7 @@ class AdapterHelper(val context: Context, private var dataset: MutableList<ListI
                     db.updateChoice(item.copy(favorite = !item.favorite))
                     categoryId = item.categoryId
                 }
+                is Platform -> db.updatePlatform(item.copy(favorite = !item.favorite))
                 else -> throw InvalidObjectException("Item is neither category nor choice")
             }
             datasetCallback(item)
@@ -121,22 +129,42 @@ class AdapterHelper(val context: Context, private var dataset: MutableList<ListI
         position: Int,
         refreshCallback: () -> Unit
     ) {
-        val item = dataset[position]
         holder.editItemButton.setOnClickListener {
+            val item = dataset[position]
             // Use the Builder class for convenient dialog construction
             val builder = AlertDialog.Builder(context)
             // Get the layout inflater
-            val inputView = LayoutInflater.from(context).inflate(R.layout.text_dialog, null)
+            val (layout, platforms) = when (item) {
+                is Choice -> Pair(R.layout.text_dialog_with_dropdown, db.getPlatforms())
+                else -> Pair(R.layout.text_dialog, null)
+            }
+            val inputView = LayoutInflater.from(context).inflate(layout, null)
             val nameView = inputView.findViewById<TextView>(R.id.text_input_field)
+            val platformSpinner: Spinner? = when (item) {
+                is Choice -> inputView.findViewById(R.id.platform_spinner)
+                else -> null
+            }
             nameView.text = item.name
+            platformSpinner?.let { sp ->
+                val names = platforms?.map { it.name } ?: emptyList()
+                val adapter = ArrayAdapter(context, R.layout.support_simple_spinner_dropdown_item, names)
+                sp.adapter = adapter
+                sp.setSelection(platforms?.firstOrNull { it.id == (item as Choice).platformId }?.id ?: 0)
+            }
             builder.setView(inputView)
                 .setPositiveButton(R.string.save) { _, _ ->
                     when (item) {
                         is Category -> db.updateCategory(item.copy(name = nameView.text.toString()))
                         is Choice -> {
-                            db.updateChoice(item.copy(name = nameView.text.toString()))
+                            db.updateChoice(
+                                item.copy(
+                                    name = nameView.text.toString(),
+                                    platformId = platforms?.firstOrNull { it.name == platformSpinner?.selectedItem as String }?.id ?: 0
+                                )
+                            )
                             categoryId = item.categoryId
                         }
+                        is Platform -> db.updatePlatform(item.copy(name = nameView.text.toString()))
                         else -> throw InvalidObjectException("Item is neither category nor choice")
                     }
                     // re-render list
@@ -147,6 +175,7 @@ class AdapterHelper(val context: Context, private var dataset: MutableList<ListI
                 }.show()
         }
         holder.deleteItemButton.setOnClickListener {
+            val item = dataset[position]
             val builder: AlertDialog.Builder = AlertDialog.Builder(context)
             builder.setMessage(context.getString(R.string.delete_item, item.name))
             builder.setPositiveButton(context.getString(R.string.delete)) { _, _ ->
@@ -166,6 +195,7 @@ class AdapterHelper(val context: Context, private var dataset: MutableList<ListI
         when (item) {
             is Category -> db.updateCategory(item.copy(enabled = isChecked))
             is Choice -> db.updateChoice(item.copy(enabled = isChecked))
+            is Platform -> db.updatePlatform(item.copy(enabled = isChecked))
             else -> throw InvalidObjectException("Item is neither category nor choice")
         }
     }
@@ -180,6 +210,7 @@ class AdapterHelper(val context: Context, private var dataset: MutableList<ListI
                 db.deleteChoice(item)
                 categoryId = item.categoryId
             }
+            is Platform -> db.deletePlatform(item)
             else -> throw InvalidObjectException("Item is neither category nor choice")
         }
         datasetCallback(item)

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="all">All</string>
     <string name="app_name">Now What?</string>
     <string name="cancel">Cancel</string>
-    <string name="categories">Categories</string>
+    <string name="categories">Categories\n(%d/%d enabled)</string>
     <string name="category">Category</string>
     <string name="category_header">Category Name</string>
+    <string name="category_list_header">Categories</string>
     <string name="choice">Choice</string>
     <string name="delete">Delete</string>
     <string name="delete_item">Delete %s?</string>
@@ -13,6 +15,10 @@
     <string name="new_category">New Category</string>
     <string name="new_item">New Item</string>
     <string name="no_choices_error">No choices found! Go add some to a category!</string>
+    <string name="no_platform">No platform</string>
+    <string name="platform">Platform</string>
+    <string name="platforms">Platforms\n(%d/%d enabled)</string>
+    <string name="platform_list_header">Platforms</string>
     <string name="randomizer">Now What?</string>
     <string name="save">Save</string>
     <string name="favorite_icon">Favorite</string>
@@ -22,7 +28,10 @@
         <item>Video Games</item>
         <item>Tabletop Games</item>
         <item>Crafts</item>
-        <item>Sports</item>
+        <item>Exercise</item>
+    </string-array>
+    <string-array name="default_platforms">
+        <item>No platform</item>
     </string-array>
     <string-array name="progress_text">
         <item>Calculating…</item>

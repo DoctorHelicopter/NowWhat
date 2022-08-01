@@ -2,14 +2,11 @@ package com.drh.nowwhat.android
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -19,17 +16,23 @@ import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
+    val db = DBHelper(this, null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val db = DBHelper(this, null)
 
         // set view to main
         setContentView(R.layout.activity_main)
 
-        // configure button listener
+        // configure button listeners
         val categoriesButton: Button = findViewById(R.id.categories_button)
         categoriesButton.setOnClickListener {
-            val intent = Intent(this, CategoriesListActivity::class.java)
+            val intent = Intent(this, CategoriesActivity::class.java)
+            startActivity(intent)
+        }
+        val platformsButton: Button = findViewById(R.id.platforms_button)
+        platformsButton.setOnClickListener {
+            val intent = Intent(this, PlatformsActivity::class.java)
             startActivity(intent)
         }
 
@@ -38,15 +41,22 @@ class MainActivity : AppCompatActivity() {
         randomizerButton.setOnClickListener {
             val categoryView: TextView = findViewById(R.id.selected_category)
             val choiceView: TextView = findViewById(R.id.selected_choice)
+            val platformView: TextView = findViewById(R.id.selected_platform)
             val progressBar: ProgressBar = findViewById(R.id.randomizer_progress_bar)
             val progressBarText: TextView = findViewById(R.id.randomizer_progress_text)
 
-            val categories = db.getEnabledCategoriesWithChoices()
+            val platforms = db.getPlatforms().associateBy { it.id }
+            val categories = db.getEnabledCategoriesWithChoices().map { c ->
+                c.copy(choices = c.choices.map { ch ->
+                    ch.copy(platform = platforms[ch.platformId])
+                }.filter { it.platform?.enabled == true})
+            }
 
             if (categories.isEmpty()) {
                 categoryView.text = getString(R.string.no_choices_error)
                 categoryView.visibility = VISIBLE
                 choiceView.visibility = INVISIBLE
+                platformView.visibility = INVISIBLE
             } else {
                 // animate progress bar
                 val progressTextOptions = this.resources.getStringArray(R.array.progress_text)
@@ -66,32 +76,39 @@ class MainActivity : AppCompatActivity() {
                             progressBarText.visibility = INVISIBLE
                             // display choice
                             val eligibleCategories = categories.toMutableList()
-                            // add favorited categories twice
+                            // double the chance for a favorited category
                             categories.forEach { if (it.favorite) eligibleCategories.add(it) }
                             val allOptions = eligibleCategories
                                 .map { c -> c.choices.map { Pair(c, it) } }
                                 .flatten()
                             val eligibleOptions = allOptions.toMutableList()
-                            // add favorited choices twice (four times if the category is also favorited)
-                            allOptions.forEach { if (it.second.favorite) eligibleOptions.add(it) }
+                            // double the chance for a favorited choice and platform
+                            allOptions.forEach {
+                                if (it.second.favorite) eligibleOptions.add(it)
+                                if (it.second.platform?.favorite == true) eligibleOptions.add(it)
+                            }
                             eligibleOptions.shuffle()
                             val (selectedCategory, selectedChoice) = eligibleOptions[Random.nextInt(allOptions.size)]
                             categoryView.text = selectedCategory.name
                             choiceView.text = selectedChoice.name
+                            platformView.text = selectedChoice.platform?.name
                             categoryView.visibility = VISIBLE
                             choiceView.visibility = VISIBLE
+                            platformView.visibility = VISIBLE
                         }
                         override fun onAnimationStart(animation: Animator?) {
                             progressBar.visibility = VISIBLE
                             progressBarText.visibility = VISIBLE
                             categoryView.visibility = INVISIBLE
                             choiceView.visibility = INVISIBLE
+                            platformView.visibility = INVISIBLE
                         }
                         override fun onAnimationCancel(animation: Animator?) {
                             progressBar.visibility = INVISIBLE
                             progressBarText.visibility = INVISIBLE
                             categoryView.visibility = INVISIBLE
                             choiceView.visibility = INVISIBLE
+                            platformView.visibility = INVISIBLE
                         }
                         override fun onAnimationRepeat(animation: Animator?) {}
                     }
@@ -101,6 +118,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        val categories = db.getCategories()
+        val enabledCategoryCount = categories.count { it.enabled }
+        val platforms = db.getPlatforms()
+        val enabledPlatformCount = platforms.count { it.enabled }
 
+        val categoriesButton: Button = findViewById(R.id.categories_button)
+        val platformsButton: Button = findViewById(R.id.platforms_button)
+
+        categoriesButton.text = getString(R.string.categories, enabledCategoryCount, categories.size)
+        platformsButton.text = getString(R.string.platforms, enabledPlatformCount, platforms.size)
+        super.onResume()
+    }
 }
 

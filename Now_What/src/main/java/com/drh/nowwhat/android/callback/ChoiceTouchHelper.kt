@@ -3,7 +3,6 @@ package com.drh.nowwhat.android.callback
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.drh.nowwhat.android.adapter.CategoriesListAdapter
 import com.drh.nowwhat.android.adapter.ChoiceAdapter
 
 object ChoiceTouchHelper {
