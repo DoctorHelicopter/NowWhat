@@ -24,20 +24,13 @@ class MainActivity : AppCompatActivity() {
         // set view to main
         setContentView(R.layout.activity_main)
 
-        val categories = db.getCategories()
-        val enabledCategoryCount = categories.count { it.enabled }
-        val platforms = db.getPlatforms()
-        val enabledPlatformCount = platforms.count { it.enabled }
-
         // configure button listeners
         val categoriesButton: Button = findViewById(R.id.categories_button)
-        categoriesButton.text = getString(R.string.categories, enabledCategoryCount, categories.size)
         categoriesButton.setOnClickListener {
             val intent = Intent(this, CategoriesActivity::class.java)
             startActivity(intent)
         }
         val platformsButton: Button = findViewById(R.id.platforms_button)
-        platformsButton.text = getString(R.string.platforms, enabledPlatformCount, platforms.size)
         platformsButton.setOnClickListener {
             val intent = Intent(this, PlatformsActivity::class.java)
             startActivity(intent)
@@ -52,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             val progressBar: ProgressBar = findViewById(R.id.randomizer_progress_bar)
             val progressBarText: TextView = findViewById(R.id.randomizer_progress_text)
 
-            val platforms = db.getPlatforms()
+            val platforms = db.getPlatforms().associateBy { it.id }
             val categories = db.getEnabledCategoriesWithChoices().map { c ->
                 c.copy(choices = c.choices.map { ch ->
                     ch.copy(platform = platforms[ch.platformId])
