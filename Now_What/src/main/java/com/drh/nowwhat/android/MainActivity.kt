@@ -16,20 +16,28 @@ import kotlin.random.Random
 
 
 class MainActivity : AppCompatActivity() {
+    val db = DBHelper(this, null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val db = DBHelper(this, null)
 
         // set view to main
         setContentView(R.layout.activity_main)
 
+        val categories = db.getCategories()
+        val enabledCategoryCount = categories.count { it.enabled }
+        val platforms = db.getPlatforms()
+        val enabledPlatformCount = platforms.count { it.enabled }
+
         // configure button listeners
         val categoriesButton: Button = findViewById(R.id.categories_button)
+        categoriesButton.text = getString(R.string.categories, enabledCategoryCount, categories.size)
         categoriesButton.setOnClickListener {
             val intent = Intent(this, CategoriesActivity::class.java)
             startActivity(intent)
         }
         val platformsButton: Button = findViewById(R.id.platforms_button)
+        platformsButton.text = getString(R.string.platforms, enabledPlatformCount, platforms.size)
         platformsButton.setOnClickListener {
             val intent = Intent(this, PlatformsActivity::class.java)
             startActivity(intent)
@@ -48,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             val categories = db.getEnabledCategoriesWithChoices().map { c ->
                 c.copy(choices = c.choices.map { ch ->
                     ch.copy(platform = platforms[ch.platformId])
-                })
+                }.filter { it.platform?.enabled == true})
             }
 
             if (categories.isEmpty()) {
@@ -117,6 +125,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        val categories = db.getCategories()
+        val enabledCategoryCount = categories.count { it.enabled }
+        val platforms = db.getPlatforms()
+        val enabledPlatformCount = platforms.count { it.enabled }
 
+        val categoriesButton: Button = findViewById(R.id.categories_button)
+        val platformsButton: Button = findViewById(R.id.platforms_button)
+
+        categoriesButton.text = getString(R.string.categories, enabledCategoryCount, categories.size)
+        platformsButton.text = getString(R.string.platforms, enabledPlatformCount, platforms.size)
+        super.onResume()
+    }
 }
 

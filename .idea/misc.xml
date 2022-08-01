@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/VRPC/.gradle/caches/transforms-3/7eabefa0b61a783786c596b8ef29d7d7/transformed/appcompat-1.4.2/res/layout/support_simple_spinner_dropdown_item.xml" value="0.31912964641885766" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/drawable/baseline_build_grey_500_24dp.xml" value="0.331" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/drawable/ic_launcher_background.xml" value="0.331" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/drawable/ic_launcher_foreground.xml" value="0.331" />
@@ -19,6 +20,7 @@
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/startup_input.xml" value="0.2640625" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/tagged_card_toggle_item.xml" value="0.4" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/text_dialog.xml" value="0.17528858486532706" />
+        <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/layout/text_dialog_with_dropdown.xml" value="0.31912964641885766" />
         <entry key="..\:/Users/VRPC/Documents/Code/NowWhat/Now_What/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.331" />
       </map>
     </option>

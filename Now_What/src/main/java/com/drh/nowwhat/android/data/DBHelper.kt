@@ -217,6 +217,64 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         return choices
     }
 
+    fun addPlatform(name: String) {
+        val values = ContentValues()
+        values.put(NAME_COL, name)
+
+        // get max sort and increment
+        this.readableDatabase.use { db ->
+            db.rawQuery(
+                "SELECT MAX($SORT_COL) AS $SORT_COL FROM $PLATFORMS_TABLE",
+                null
+            ).use { cursor ->
+                cursor.moveToFirst()
+                values.put(SORT_COL, cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)) + 1)
+            }
+        }
+
+        this.writableDatabase.use { db ->
+            db.insert(PLATFORMS_TABLE, null, values)
+        }
+    }
+
+    fun updatePlatform(platform: Platform) {
+        val values = ContentValues()
+        values.put(NAME_COL, platform.name)
+        values.put(ENABLED_COL, platform.enabled)
+        values.put(FAVORITE_COL, platform.favorite)
+        this.writableDatabase.use { db ->
+            db.update(PLATFORMS_TABLE, values, "$ID_COL = ${platform.id}", null)
+        }
+    }
+
+    fun updatePlatformSort(platform: Platform, newSort: Int) {
+        // anything with sort gte new sort gets incremented
+        this.writableDatabase.use { db ->
+            db.execSQL("UPDATE $PLATFORMS_TABLE SET $SORT_COL = $SORT_COL + 1 WHERE $SORT_COL >= $newSort")
+            db.execSQL("UPDATE $PLATFORMS_TABLE SET $SORT_COL = $newSort WHERE $ID_COL = ${platform.id}")
+        }
+        reconcilePlatformSort()
+    }
+
+    private fun reconcilePlatformSort() {
+        // shove all sorts down to remove gaps
+        val platforms = getPlatforms()
+        this.writableDatabase.use { db ->
+            platforms
+                .sortedBy { it.sort }
+                .mapIndexed { i, c ->
+                    db.execSQL("UPDATE $PLATFORMS_TABLE SET $SORT_COL = $i WHERE $ID_COL = ${c.id}")
+                }
+        }
+    }
+
+    fun deletePlatform(platform: Platform) {
+        this.writableDatabase.use { db ->
+            db.delete(PLATFORMS_TABLE, "$ID_COL = ${platform.id}", null)
+        }
+        reconcilePlatformSort()
+    }
+
     fun getPlatforms(): List<Platform> {
         val platforms: MutableList<Platform> = emptyList<Platform>().toMutableList()
         this.readableDatabase.use { db ->
@@ -269,7 +327,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
     private fun choiceParser(cursor: Cursor, prefix: Boolean = false): Choice {
         val p = if (prefix) CHOICE else ""
         return Choice(
-            cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + ID_COL)),
             cursor.getString(cursor.getColumnIndexOrThrow(p + NAME_COL)),
             cursor.getInt(cursor.getColumnIndexOrThrow(p + ENABLED_COL)) == 1,
             cursor.getInt(cursor.getColumnIndexOrThrow(p + SORT_COL)),

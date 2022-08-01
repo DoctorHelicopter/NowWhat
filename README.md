@@ -24,12 +24,6 @@ we've got you covered.
 
 ## Roadmap
 
-- Platform selection and tagging
-  - New section next to categories for platforms
-    - Both buttons should now indicate how many items are toggled on
-  - Toggled the same way - no favorites though (?)
-  - Add ability to tag items with platform (REQUIRED FIELD)
-  - If specific platforms are toggled on, only randomize items with that tag
 - Link to streaming/gaming platforms to import watchlists
   - Add fixed list (more to come) of integrations available (other platforms can be added without integration)
   - Auto-fill / create (if not exists) categories for items in watchlist / playlist on those platforms and tag them properly

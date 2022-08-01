@@ -1,6 +1,5 @@
 package com.drh.nowwhat.android
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
@@ -41,7 +40,7 @@ class CategoriesActivity : AppCompatActivity(),
         recyclerView.setHasFixedSize(true)
 
         val categoryHeader = findViewById<TextView>(R.id.item_header_text)
-        categoryHeader.text = getString(R.string.categories)
+        categoryHeader.text = getString(R.string.category_list_header)
         // attach touch helper for drag/drop and swipe
         CategoryTouchHelper.helper.attachToRecyclerView(recyclerView)
         // configure item adapter
@@ -64,10 +63,10 @@ class CategoriesActivity : AppCompatActivity(),
 
     private fun refreshList() {
         finish()
-        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0)
         intent.putExtra("editButtonsVisible", true)
         startActivity(intent)
-        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0)
     }
 
     // The dialog fragment receives a reference to this Activity through the

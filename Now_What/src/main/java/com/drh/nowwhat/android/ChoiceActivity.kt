@@ -59,10 +59,10 @@ class ChoiceActivity : AppCompatActivity(),
 
     private fun refreshList() {
         finish()
-        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0)
         intent.putExtra("editButtonsVisible", true)
         startActivity(intent)
-        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0)
     }
 
     // The dialog fragment receives a reference to this Activity through the
