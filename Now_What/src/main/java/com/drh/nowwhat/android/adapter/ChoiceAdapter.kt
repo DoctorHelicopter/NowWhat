@@ -1,6 +1,7 @@
 package com.drh.nowwhat.android.adapter
 
 import android.content.Context
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,10 +9,12 @@ import com.drh.nowwhat.android.*
 import com.drh.nowwhat.android.data.DBHelper
 import com.drh.nowwhat.android.model.Choice
 import com.drh.nowwhat.android.model.ListItem
+import com.drh.nowwhat.android.model.Platform
 
 class ChoiceAdapter(
     context: Context,
     private var dataset: MutableList<Choice>,
+    private var platforms: Map<Int, Platform>,
     private var editButtonsVisible: Boolean,
     private val refreshCallback: () -> Unit
 ) : RecyclerView.Adapter<ListItemViewHolder>(){
@@ -32,7 +35,7 @@ class ChoiceAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         // create a new view
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_toggle_item, parent, false)
+            .inflate(R.layout.tagged_card_toggle_item, parent, false)
         return ListItemViewHolder(adapterLayout)
     }
 
@@ -42,12 +45,18 @@ class ChoiceAdapter(
     override fun onBindViewHolder(holder: ListItemViewHolder, position: Int) {
         val item = dataset[position]
         holder.textView.text = item.name
+        if (item.platformId != 0) { // only set tag and typeface for non-default
+            platforms[item.platformId]?.let { p ->
+                holder.tagTextView?.text = p.name
+                holder.tagTextView?.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
+            }
+        }
         holder.itemToggle.isChecked = item.enabled
         holder.itemToggle.setOnCheckedChangeListener { _, isChecked ->
             helper.toggleItem(item, isChecked)
         }
         currentCategoryId = item.categoryId
-        helper.setEditButtonVisibility(holder, position, editButtonsVisible, refreshCallback,)
+        helper.setEditButtonVisibility(holder, position, editButtonsVisible, refreshCallback)
         helper.setFavoriteClickListener(holder, position)
         helper.setFavoriteButton(holder, item.favorite)
     }

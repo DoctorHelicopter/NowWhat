@@ -7,5 +7,6 @@ data class Choice(
     override val sort: Int,
     override val favorite: Boolean,
     val categoryId: Int,
-    val platformId: Int?
+    val platformId: Int,
+    val platform: Platform? = null
 ): ListItem

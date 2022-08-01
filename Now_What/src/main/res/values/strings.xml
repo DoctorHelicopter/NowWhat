@@ -13,6 +13,8 @@
     <string name="new_category">New Category</string>
     <string name="new_item">New Item</string>
     <string name="no_choices_error">No choices found! Go add some to a category!</string>
+    <string name="no_platform">No platform</string>
+    <string name="platform">Platform</string>
     <string name="platforms">Platforms</string>
     <string name="randomizer">Now What?</string>
     <string name="save">Save</string>
@@ -23,7 +25,10 @@
         <item>Video Games</item>
         <item>Tabletop Games</item>
         <item>Crafts</item>
-        <item>Sports</item>
+        <item>Exercise</item>
+    </string-array>
+    <string-array name="default_platforms">
+        <item>No platform</item>
     </string-array>
     <string-array name="progress_text">
         <item>Calculating…</item>

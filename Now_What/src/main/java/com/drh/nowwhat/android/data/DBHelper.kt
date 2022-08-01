@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.drh.nowwhat.android.R
 import com.drh.nowwhat.android.model.Category
 import com.drh.nowwhat.android.model.Choice
+import com.drh.nowwhat.android.model.Platform
 import java.lang.IllegalArgumentException
 
 class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFactory?) :
@@ -29,7 +30,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
     }
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
-        val dbUpgrades = DBUpgrades(db)
+        val dbUpgrades = DBUpgrades(db, context)
         for (v in p1 until p2) { // upgrade one version at a time if catchup is needed
             when (v) {
                 // current version -> upgrade to new version
@@ -49,6 +50,12 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
             values.put(NAME_COL, c)
             values.put(SORT_COL, i)
             db.insert(CATEGORIES_TABLE, null, values)
+        }
+        context.resources.getStringArray(R.array.default_platforms).mapIndexed { i, p ->
+            val values = ContentValues()
+            values.put(NAME_COL, p)
+            values.put(SORT_COL, i)
+            db.insert(PLATFORMS_TABLE, null, values)
         }
     }
 
@@ -168,6 +175,7 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         values.put(NAME_COL, choice.name)
         values.put(ENABLED_COL, choice.enabled)
         values.put(FAVORITE_COL, choice.favorite)
+        values.put(PLATFORM_ID_COL, choice.platformId)
         this.writableDatabase.use { db ->
             db.update(CHOICES_TABLE, values, "$ID_COL = ${choice.id}", null)
         }
@@ -209,20 +217,36 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         return choices
     }
 
+    fun getPlatforms(): List<Platform> {
+        val platforms: MutableList<Platform> = emptyList<Platform>().toMutableList()
+        this.readableDatabase.use { db ->
+            db.rawQuery("SELECT * FROM $PLATFORMS_TABLE ORDER BY $SORT_COL", null)
+                .use { cursor ->
+                    while (cursor.moveToNext()) {
+                        platforms.add(platformParser(cursor))
+                    }
+                }
+        }
+        return platforms
+    }
+
     fun getEnabledCategoriesWithChoices(): List<Category> {
         val pairs: MutableList<Pair<Category, Choice>> = emptyList<Pair<Category, Choice>>().toMutableList()
         this.readableDatabase.use { db ->
             db.rawQuery(
                 """
                 SELECT
+                    ca.$ID_COL AS $CATEGORY_ID_COL,
                     ca.$NAME_COL AS $CATEGORY$NAME_COL,
+                    ca.$ENABLED_COL AS $CATEGORY$ENABLED_COL,
                     ca.$SORT_COL AS $CATEGORY$SORT_COL,
                     ca.$FAVORITE_COL AS $CATEGORY$FAVORITE_COL,
+                    ch.$ID_COL AS $CHOICE$ID_COL,
                     ch.$NAME_COL AS $CHOICE$NAME_COL,
+                    ch.$ENABLED_COL AS $CHOICE$ENABLED_COL,
                     ch.$SORT_COL AS $CHOICE$SORT_COL,
                     ch.$FAVORITE_COL AS $CHOICE$FAVORITE_COL,
-                    ch.$CATEGORY_ID_COL AS $CATEGORY$ID_COL,
-                    ch.$ID_COL AS $CHOICE$ID_COL
+                    ch.$PLATFORM_ID_COL AS $CHOICE$PLATFORM_ID_COL
                 FROM $CATEGORIES_TABLE ca 
                 INNER JOIN $CHOICES_TABLE ch ON ca.$ID_COL = ch.$CATEGORY_ID_COL
                 WHERE ca.$ENABLED_COL = 1 AND ch.$ENABLED_COL = 1
@@ -242,28 +266,37 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         return mapper.map { (category, choices) -> category.copy(choices = choices) }
     }
 
-    fun choiceParser(cursor: Cursor, prefix: Boolean = false): Choice {
+    private fun choiceParser(cursor: Cursor, prefix: Boolean = false): Choice {
         val p = if (prefix) CHOICE else ""
-        val platformColIndex = cursor.getColumnIndexOrThrow(p + PLATFORM_ID_COL)
         return Choice(
-            cursor.getInt(cursor.getColumnIndexOrThrow(p + ID_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL)),
             cursor.getString(cursor.getColumnIndexOrThrow(p + NAME_COL)),
             cursor.getInt(cursor.getColumnIndexOrThrow(p + ENABLED_COL)) == 1,
             cursor.getInt(cursor.getColumnIndexOrThrow(p + SORT_COL)),
             cursor.getInt(cursor.getColumnIndexOrThrow(p + FAVORITE_COL)) == 1,
-            cursor.getInt(cursor.getColumnIndexOrThrow(p + CATEGORY_ID_COL)),
-            if (cursor.isNull(platformColIndex)) null else cursor.getInt(platformColIndex)
+            cursor.getInt(cursor.getColumnIndexOrThrow(CATEGORY_ID_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(p + PLATFORM_ID_COL))
         )
     }
 
-    fun categoryParser(cursor: Cursor, prefix: Boolean = false): Category {
+    private fun categoryParser(cursor: Cursor, prefix: Boolean = false): Category {
         val p = if (prefix) CATEGORY else ""
         return Category(
-            cursor.getInt(cursor.getColumnIndexOrThrow(p + ID_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(if (prefix) CATEGORY_ID_COL else ID_COL)),
             cursor.getString(cursor.getColumnIndexOrThrow(p + NAME_COL)),
             cursor.getInt(cursor.getColumnIndexOrThrow(p + ENABLED_COL)) == 1,
             cursor.getInt(cursor.getColumnIndexOrThrow(p + SORT_COL)),
             cursor.getInt(cursor.getColumnIndexOrThrow(p + FAVORITE_COL)) == 1
+        )
+    }
+
+    private fun platformParser(cursor: Cursor): Platform {
+        return Platform(
+            cursor.getInt(cursor.getColumnIndexOrThrow(ID_COL)),
+            cursor.getString(cursor.getColumnIndexOrThrow(NAME_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(ENABLED_COL)) == 1,
+            cursor.getInt(cursor.getColumnIndexOrThrow(SORT_COL)),
+            cursor.getInt(cursor.getColumnIndexOrThrow(FAVORITE_COL)) == 1
         )
     }
 

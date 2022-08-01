@@ -30,6 +30,9 @@ class ListItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val deleteItemButton: MaterialButton = view.findViewById(R.id.delete_item_button)
     val favoriteButton: ImageView = view.findViewById(R.id.favorite_icon)
     val constraintLayout: ConstraintLayout = view.findViewById(R.id.item_constraint_layout)
+    val tagTextView: TextView? = if (view.sourceLayoutResId == R.layout.tagged_card_toggle_item){
+        view.findViewById(R.id.tag_text)
+    } else null
 }
 
 class AdapterHelper(val context: Context, private var dataset: MutableList<ListItem>) {

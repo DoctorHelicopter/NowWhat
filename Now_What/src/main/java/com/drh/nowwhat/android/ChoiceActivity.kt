@@ -33,6 +33,7 @@ class ChoiceActivity : AppCompatActivity(),
     private fun displayItems(categoryId: Int) {
         val db = DBHelper(this, null)
         val choices = db.getCategoryChoices(categoryId).toMutableList()
+        val platforms = db.getPlatforms().associateBy { it.id }
         // create view
         val recyclerView = findViewById<RecyclerView>(R.id.item_recycler)
         // for performance, as layout size is fixed
@@ -45,7 +46,7 @@ class ChoiceActivity : AppCompatActivity(),
         ChoiceTouchHelper.helper.attachToRecyclerView(recyclerView)
         // attach item adapter
         val editButtonsVisible = intent.extras?.getBoolean("editButtonsVisible") ?: false
-        val adapter = ChoiceAdapter(this, choices, editButtonsVisible, ::refreshList)
+        val adapter = ChoiceAdapter(this, choices, platforms, editButtonsVisible, ::refreshList)
         recyclerView.adapter = adapter
 
         // configure edit button listener

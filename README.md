@@ -34,6 +34,7 @@ we've got you covered.
   - Add fixed list (more to come) of integrations available (other platforms can be added without integration)
   - Auto-fill / create (if not exists) categories for items in watchlist / playlist on those platforms and tag them properly
   - Sync on app startup, also give refresh button
+- Search current list
 - Items can have number of participants (nullable), randomizer can filter based on min/max/equals
 - Login and account-based saves (share your lists between devices)
 - Add friends, share lists (?)
