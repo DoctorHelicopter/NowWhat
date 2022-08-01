@@ -142,10 +142,11 @@ class DBHelper(private val context: Context, factory: SQLiteDatabase.CursorFacto
         return categories
     }
 
-    fun addChoice(name: String, categoryId: Int) {
+    fun addChoice(name: String, categoryId: Int, platformId: Int) {
         val values = ContentValues()
         values.put(NAME_COL, name)
         values.put(CATEGORY_ID_COL, categoryId)
+        values.put(PLATFORM_ID_COL, platformId)
 
         // get max sort and increment
         this.readableDatabase.use { db ->
